@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useQRCode } from 'next-qrcode'; // QR code library
 import html2canvas from 'html2canvas';
-import bgQRCode from '../components/Images/Group100000090.png';
+import bgQRCode from '../../components/Images/Group100000090.png';
 
 const QRCodeWithDownload = () => {
   const hiddenRef = useRef();

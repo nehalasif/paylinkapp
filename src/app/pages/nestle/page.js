@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // For navigation
-import Header from '../components/header';
-import Footer from '../components/footer';
-import logo from '../components/Images/nestlelogo.avif';
+import Header from '../../components/header';
+import Footer from '../../components/footer';
+import logo from '../../components/Images/kuickpay-logo.png';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
