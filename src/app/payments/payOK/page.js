@@ -3,12 +3,11 @@
 import React, { useEffect, useState,useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { decryptText } from '@/app/utils/decryptText';
 import { createAxiosInstance } from '@/app/constants/axiosInstance';
 import { API_URLS } from '@/app/constants/config';
 import EncryptionUtils from "../../utils/encryptionUtils";
 import Header from '@/app/components/header';
-import logo from '../../components/Images/kuickpay-logo.png';
+import logo from '@/app/components/Images/kuickpay-logo.png';
 import Footer from '@/app/components/footer';
 import html2canvas from 'html2canvas';
 
@@ -23,7 +22,7 @@ const  PayOK= () => {
     const [isLoading, setIsLoading] = useState(false); // Manage loading state
     const ID = searchParams.get('ID');
     const [data, setData] = useState(null);
-    const { decryptData } = require('../../utils/decryptUtils');
+    
     // const { Canvas } = useQRCode();
     const hiddenRef = useRef();
   
@@ -76,7 +75,7 @@ const  PayOK= () => {
             // const searchParams = new URLSearchParams(window.location.search);
             const ID = searchParams.get('ID');
             const decodedID = decodeURIComponent(ID);
-            const decryptedID = EncryptionUtils.decryptText(decodedID);
+            //const decryptedID = Json.parse(EncryptionUtils.decryptText(decodedID));
             
         const payload = {
             institutionID: sessionStorage.getItem('institutionID'),
@@ -152,7 +151,7 @@ const  PayOK= () => {
       const databus =sessionStorage.getItem('dataBus');
       console.log("Startig >>>>");
       //console.log(databus);
-      const GetDatafromInquiry = decryptData(sessionStorage.getItem('dataBus'));
+      const GetDatafromInquiry = JSON.parse(EncryptionUtils.decryptText(sessionStorage.getItem('dataBus')));
       console.log(GetDatafromInquiry);
       if (GetDatafromInquiry) {
           setData({
@@ -236,16 +235,12 @@ const backtoHome = async () =>{
                 <p className="InvSumContent">Payment Date</p>
                 <p className="InvSumContentweight">{formatDate(currentDate)} </p>
               </div>
+              <div className="px-2 pt-2 flex justify-between items-center">
+                <p className="InvSumContent">Bill Status</p>
+                <p className="InvSumContentweight">Paid</p>
+              </div>
 
-              {/* <div className="border-t mt-5"></div>
-              <p className="px-2 pt-2 justify-between items-center lg:text-md md:text-md sm:text-sm xsize:text-xs">
-                Your Platform Fee is Rs. for using a Visa Card
-              </p> */}
-
-              {/* <div className="px-2 pt-5 flex justify-between items-center">
-                <p className="text-lg font-light">Payable Amount</p>
-                <p className="font-medium text-lg">PKR </p>
-              </div> */}
+             
 
               <div className="flex items-center w-full py-2 mt-10 relative">
                 <button onClick={backtoHome}  className="button-styleReceipt-white  bg-btnBlue"> Close</button>                

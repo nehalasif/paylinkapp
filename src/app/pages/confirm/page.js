@@ -2,19 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // For navigation
-import Header from '../components/header';
-import Footer from '../components/footer';
+import Header from '../../components/header';
+import Footer from '../../components/footer';
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
-import { API_URLS } from '../constants/config.js';
-import axiosInstance, { createAxiosInstance } from '../constants/axiosInstance';
-import logo from '../components/Images/kuickpay-logo.png';
-import EncryptionUtils from "../utils/encryptionUtils";
+import { API_URLS } from '../../constants/config.js';
+import axiosInstance, { createAxiosInstance } from '../../constants/axiosInstance';
+import logo from '../../components/Images/kuickpay-logo.png';
+import EncryptionUtils from "../../utils/encryptionUtils";
+import encryptData from "../../utils/encrypText"
+
 
 const PaymentConfirmation = () => {
   const router = useRouter();
   const [data, setData] = useState(null);
-   const { decryptData } = require('../utils/decryptUtils');
+   const { decryptData } = require('../../utils/decryptUtils');
   const [token , setToken] = useState(null);
 
   const [feeData, setFeeData] = useState(null); // State to store platform fee
@@ -36,7 +38,7 @@ const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
         const GetDatafromInquiry = sessionStorage.getItem('dataBus');
         if (GetDatafromInquiry) {
           const decryptedData = JSON.parse(EncryptionUtils.decryptText(sessionStorage.getItem('dataBus')));
-          console.log(decryptedData);
+          ///console.log(decryptedData);
           if (decryptedData) {
             setData({
               voucherData: decryptedData.voucherData,
@@ -57,25 +59,26 @@ const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
             const params =
               decryptedData.Institution?.institutionID +
               '4uNuf29HnlFG7PGwek8IRgx6gDhOaE8WiPUwYkM572zbuhnyzq6HsPtuVu9M3JbD';
-            const encryptedData = EncryptionUtils.encryptText(params).toString(); // Encrypting the params
-              console.log(decryptedData);
+            const encryptedData = EncryptionUtils.encryptText(params) // Encrypting the params
+              // console.log(params);
+              // console.log(encryptedData);
             const param = {
               ObjectValue: encryptedData,
             };
-            const gatewayTokenResponse = await checkoutAxios.post('/api/KPPublicToken', param);
+            // const gatewayTokenResponse = await checkoutAxios.post('/api/KPPublicToken', param);
+            // const param = {
+            //   ObjectValue: "EERCVsTSNRKoQfm48ZDRIlC8k20rS82mmDgz32Ze+tBkys6x985Mz/+Y8XqaXPsI7EEaaGkssnaHkjSxqGGM3dwEaOztwxf0yfZm7D9AUYo=",
+            // };
+            const gatewayTokenResponse = await axios.post(API_URLS.gatewayUrl+'/api/KPPublicToken', param);
+            
             const { auth_token } = gatewayTokenResponse.data;
             
             setToken(auth_token);
-            console.log(gatewayTokenResponse);
+   
             if (gatewayTokenResponse?.data?.responseCode === '00') {
-              //setBearerToken(auth_token);
-              console.log(auth_token); 
-
-              // Now that we have the bearer token, call the GetPlatformFee API
-              const localstored = EncryptionUtils.decryptText(sessionStorage.getItem('localstored')); // Assuming localstored is already set in sessionStorage
-              await fetchPlatformFee(auth_token, decryptedData, localstored);
-              console.log("cardno",sessionStorage.getItem('localstored'));
-
+              
+              await fetchPlatformFee(auth_token, decryptedData);
+              
              
             }
           }
@@ -95,12 +98,10 @@ const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
               : logo;
 
   const fetchPlatformFee = async (auth_token, decryptedData) => {
-    const savedData = sessionStorage.getItem("localstored"); // Retrieve the saved JSON string
-     
-      const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
+   
+      const parsedData = JSON.parse(EncryptionUtils.decryptText(sessionStorage.getItem("localstored"))); // Parse the JSON string back to an object
       const cardNumber = parsedData.cardNumber.replace(/-/g, "").slice(0, 6); // Access the cardNumber field
-      console.log("Card Number:", cardNumber); // Output the card number
-     
+      
     if(auth_token && cardNumber){
 try {
   const platformFeeParams = {
@@ -120,7 +121,7 @@ try {
   });
 
       if (response?.data?.responseCode === '00') {
-        console.log(response.data);
+        
          const FeeData =response.data;     //sessionStorage.setItem('getFee', encryptData(JSON.stringify(response.data)));
         
         setFeeData(FeeData);
@@ -137,7 +138,7 @@ try {
   };
   
   const PayNowButtonEvent = async () => {
-    const savedData = sessionStorage.getItem("localstored"); // Retrieve the saved JSON string
+    const savedData = EncryptionUtils.decryptText(sessionStorage.getItem("localstored")); // Retrieve the saved JSON string
      
       const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
       const cardNumber = parsedData.cardNumber.replace(/-/g, ""); // Access the cardNumber field

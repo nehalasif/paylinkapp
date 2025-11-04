@@ -2,25 +2,25 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // For navigation
-import Header from '../components/header';
-import Footer from '../components/footer';
-import InfoArea from '../components/InfoArea';
-import Textbox from '../components/textbox';
-import logo from '../components/Images/kuickpay-logo.png';
+import Header from '../../components/header';
+import Footer from '../../components/footer';
+import InfoArea from '../../components/InfoArea';
+import Textbox from '../../components/textbox';
+import logo from '../../components/Images/kuickpay-logo.png';
 import CryptoJS from 'crypto-js';
-import SearchIcon from '../components/svgs/cardinfo/search.svg';
-import calendar from '../components/svgs/cardinfo/calendar.svg';
+import SearchIcon from '../../components/svgs/cardinfo/search.svg';
+import calendar from '../../components/svgs/cardinfo/calendar.svg';
 
-import card from '../components/svgs/cardinfo/cc.svg';
+import card from '../../components/svgs/cardinfo/cc.svg';
 
-import lock from '../components/svgs/cardinfo/Vector.svg';
-import EncryptionUtils from "../utils/encryptionUtils";
+import lock from '../../components/svgs/cardinfo/Vector.svg';
+import EncryptionUtils from "../../utils/encryptionUtils";
 
 const CardInfo = () => {
   const router = useRouter();
     const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
      const [logoLoader, setLogoLoader] = useState(true);
-     const { decryptData } = require('../utils/decryptUtils');
+     const { decryptData } = require('../../utils/decryptUtils');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryMonth, setExpiryMonth] = useState('');
   const [expiryYear, setExpiryYear] = useState('');
@@ -132,11 +132,11 @@ const CardInfo = () => {
       };
   
   if (validateForm()) {
-    sessionStorage.setItem("localstored", JSON.stringify(formData));
+    
+    sessionStorage.setItem("localstored", EncryptionUtils.encryptText(JSON.stringify(formData)));
+  const getSessionvalue = sessionStorage.getItem("localstored");
 
-const getSessionvalue = sessionStorage.getItem("localstored");
-
-    router.replace(`/confirm`);
+    router.replace(`/pages/confirm`);
   }
   };
 

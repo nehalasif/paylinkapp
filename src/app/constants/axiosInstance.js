@@ -4,6 +4,10 @@ import axios from 'axios';
 export const createAxiosInstance = ({ baseURL, token }) => {
     const axiosInstance = axios.create({
       baseURL,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   
     // Request interceptor for adding Authorization header

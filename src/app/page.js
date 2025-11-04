@@ -25,7 +25,7 @@ const PaymentLink = () => {
   const [kuickpayID, setKuickpayID] = useState(''); // State for Kuickpay ID
   const [selectedInstitution, setSelectedInstitution] = useState(null); // Store selected institution
  const router = useRouter();
- const { encryptData } = require('./utils/encryptUtils');
+ const { encryptData } = require('./utils/encrypText');
  const { decryptData } = require('./utils/decryptUtils');
   // Fetch Authentication Token
   useEffect(() => {
@@ -110,7 +110,7 @@ const PaymentLink = () => {
             institutionID: selectedInstitution.institutionID,
             kuickpayID: kuickpayID
         }))
-          router.push(`/inquiry?data=${encodeURIComponent(consumerDataEnc)}`);
+          router.push(`pages/inquiry?data=${encodeURIComponent(consumerDataEnc)}`);
       } else {
           alert('The length of the Kuickpay ID must be greater than 5.');
       }

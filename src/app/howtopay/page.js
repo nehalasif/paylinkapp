@@ -1,95 +1,121 @@
 'use client';
 import React, { useState } from 'react';
 import Head from 'next/head';
+import Header from '../components/header';
+import logo from '../components/Images/kuickpay-logo.png';
 
 const BanksPage = () => {
-  const [activeAccordion, setActiveAccordion] = useState(null);
+  // const [activeAccordion, setActiveAccordion] = useState(null);
 
-  const toggleAccordion = (bankName) => {
-    setActiveAccordion((prev) => (prev === bankName ? null : bankName));
+  // const toggleAccordion = (bankName) => {
+  //   setActiveAccordion((prev) => (prev === bankName ? null : bankName));
+  // };
+const [openPanel, setOpenPanel] = useState(null);
+
+  const togglePanel = (panel) => {
+    setOpenPanel(openPanel === panel ? null : panel);
   };
-
   return (
-    <>
-      <Head>
-        <title>Bank Payment Instructions</title>
-      </Head>
+    <div className="mx-auto p-4">
+       <Header 
+               Heading={"Kuickpay - How to Pay using Bill Payment"}
+                logo={logo}
+                
+              />
+    
 
-      <div className="container mx-auto px-4 my-10">
-        <h2 className="text-3xl font-semibold text-center mb-6">Bank Payment Instructions</h2>
+      <div className="container mx-auto mt-20">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="text-center">
+              <h4 className="text-2xl font-semibold text-gray-800 mb-4">
+                Kuickpay - How to Pay using Bill Payment (Internet/Mobile Banking and ATM)
+              </h4>
+              <h5 className="text-gray-700">
+                Have Questions? Contact us on{' '}
+                <a href="https://wa.me/923358425729" target="_blank" className="text-green-500 font-bold hover:underline">
+                  WhatsApp (+92-335-8425729)
+                </a>
+              </h5>
+            </div>
+            
 
-        {/* Allied Bank */}
-        <div className="border-b border-gray-300 mb-4">
-          <button
-            onClick={() => toggleAccordion('ABL')}
-            className="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 font-medium text-lg"
-          >
-            Allied Bank
-          </button>
-          {activeAccordion === 'ABL' && (
-            <div className="p-4 bg-gray-50 border-t border-gray-200">
-              <div className="mb-4">
-                <strong>Internet Banking:</strong>
-                <ol className="list-decimal pl-5 mt-2 space-y-1">
-                  <li>
-                    Login to your Internet Banking (
-                    <a
-                      href="https://login.abl.com/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 underline"
+            <div className="flex gap-[20px]">
+            {/*lines of code placeholder */}
+
+
+
+  <div className="grow w-[40%] bg-red-200">
+
+    DIV 1
+  </div>
+
+  <div className="grow w-[70%] bg-red-400">
+
+    DIV 2
+    </div>
+</div>
+
+
+          
+
+            <div className="mt-8">
+              <h5 className="text-lg font-semibold text-gray-800 mb-4">
+                Digital Partner Banks (Select the bank to see its process)
+              </h5>
+              <div className="space-y-4">
+                {[
+                  { id: 'ABL', title: 'Allied Bank', content: 'Internet Banking and Mobile Banking instructions...' },
+                  { id: 'BAB', title: 'Al Baraka Bank', content: 'Internet Banking and Mobile Banking instructions...' },
+                  // Add more banks here
+                ].map((bank) => (
+                  <div key={bank.id} className="border border-gray-300 rounded">
+                    <div
+                      className="p-4 bg-gray-100 cursor-pointer"
+                      onClick={() => togglePanel(bank.id)}
                     >
-                      click here to login now
-                    </a>
-                    )
-                  </li>
-                  <li>Select Pay Bills</li>
-                  <li>
-                    Select KuickPay as Category and then Select relevant biller name. If the biller
-                    is not showing, select <strong>Others</strong>.
-                  </li>
-                  <li>Enter Consumer ID and click Validate</li>
-                  <li>Confirm details and Pay</li>
-                </ol>
-              </div>
-
-              <div>
-                <strong>Mobile Banking:</strong>
-                <ol className="list-decimal pl-5 mt-2 space-y-1">
-                  <li>Login to myABL Mobile App</li>
-                  <li>Select Pay Bills</li>
-                  <li>
-                    Select KuickPay as Category and then Select relevant biller name. If the biller
-                    is not showing, select <strong>Others</strong>.
-                  </li>
-                  <li>Enter Consumer ID and click Validate</li>
-                  <li>Confirm details and Pay</li>
-                </ol>
+                      <h4 className="text-lg font-semibold">{bank.title}</h4>
+                    </div>
+                    {openPanel === bank.id && (
+                      <div className="p-4 bg-white">
+                        <p>{bank.content}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Add more banks here using the same structure */}
-        <div className="border-b border-gray-300 mb-4">
-          <button
-            onClick={() => toggleAccordion('MCB')}
-            className="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 font-medium text-lg"
-          >
-            MCB Bank
-          </button>
-          {activeAccordion === 'MCB' && (
-            <div className="p-4 bg-gray-50 border-t border-gray-200">
-              <p>
-                <strong>Instructions for MCB coming soon...</strong>
-              </p>
+            <div className="mt-8">
+              <h5 className="text-lg font-semibold text-gray-800 mb-4">
+                Over the Counter (OTC) Partners (Select the partner to see its process)
+              </h5>
+              <div className="space-y-4">
+                {[
+                  { id: 'TCSOTC', title: 'TCS', content: 'TCS Express Centers instructions...' },
+                  { id: 'MBLOTC', title: 'Meezan Bank', content: 'Meezan Bank Branches instructions...' },
+                  // Add more OTC partners here
+                ].map((partner) => (
+                  <div key={partner.id} className="border border-gray-300 rounded">
+                    <div
+                      className="p-4 bg-gray-100 cursor-pointer"
+                      onClick={() => togglePanel(partner.id)}
+                    >
+                      <h4 className="text-lg font-semibold">{partner.title}</h4>
+                    </div>
+                    {openPanel === partner.id && (
+                      <div className="p-4 bg-white">
+                        <p>{partner.content}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+          </div>
         </div>
-
-        {/* Repeat the structure for more banks */}
       </div>
-    </>
+    </div>
   );
 };
 

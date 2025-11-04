@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/navigation'; // For navigation
-import Header from '../components/header';
-import Footer from '../components/footer';
-import logo from '../components/Images/kuickpay-logo.png';
+import Header from '../../components/header';
+import Footer from '../../components/footer';
+import logo from '../../components/Images/kuickpay-logo.png';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
@@ -22,6 +22,10 @@ const ProcessHTML = () => {
       const content1 = sessionStorage.getItem('htmlContent');
       setHtmlContent(content1);
 
+      console.log("First useEffect",content1);
+
+      console.log("First useEffect");
+
     
 
     // Retrieve content from sessionStorage
@@ -32,15 +36,21 @@ const ProcessHTML = () => {
       content &&
       (content.startsWith("http://") || content.startsWith("https://"));
     if (isUrl) {
+      console.log("True - isUrl");
+
       setIframeUrl(content);
+      console.log("True - isUrl",content);
     } else {
+
+      console.log("else - isUrl");
       const newWindow = window.open("", "_self");
+      console.log("else - isUrl",newWindow.document);
       setTimeout(() => {
         //sessionStorage.removeItem("transactionPost");
         // document.body.innerHTML = htmlContent;
         // handleFormSubmit();
         if (newWindow && newWindow.document) {
-          newWindow.document.write(content, "_self");
+          newWindow.document.write(content1, "_self");
           newWindow.document.close();
         }
       }, 1000);
@@ -69,7 +79,7 @@ const ProcessHTML = () => {
         const params = extractQueryParams(currentUrl);
         // console.log("Extracted params:", params);
         router.push({
-          pathname: 'payments/payOK',
+          pathname: '/pages/payments/payOK',
           query: params
         });
         // Perform any additional actions based on extracted params

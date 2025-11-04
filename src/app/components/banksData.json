@@ -1,0 +1,456 @@
+{
+    "banks": [
+      {
+        "name": "Allied Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Pay Bills",
+          "Select KuickPay as Category and then Select relevant biller name. In case the biller is listed with KuickPay but not showing in myABL, select others as biller name.",
+          "Enter Consumer ID and click Validate",
+          "Confirm details and Pay"
+        ],
+        "mobileBanking": [
+          "Login to myABL Mobile App",
+          "Select Pay Bills",
+          "Select KuickPay as Category and then Select relevant biller name. In case the biller is listed with KuickPay but not showing in myABL, select others as biller name.",
+          "Enter Consumer ID and click Validate",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "Al Baraka Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Payments/Bill Payments",
+          "Select Kuickpay",
+          "Enter Consumer Number and fetch details",
+          "Confirm details and click Pay Now to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payment/Bill Payments",
+          "Select Kuickpay",
+          "Enter Consumer Number and fetch details",
+          "Confirm details and click Pay Now to Pay"
+        ]
+      },
+      {
+        "name": "Askari Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Payments and then Select Other Payments",
+          "Select E-Commerce as Billing Type and then Select Kuick Pay as company",
+          "Enter Order No and click Proceed",
+          "Confirm details and Select Account or Credit Card as Payment Mode",
+          "Generate and enter Financial Pin",
+          "Click Proceed to pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Bill Payments and then Select Account from PAY FROM option",
+          "Select E-Commerce as Company Type and then Select Kuick Pay as Bill Company",
+          "Enter or Select Consumer Number and click Next",
+          "Confirm details and click Next",
+          "Generate and enter Financial Pin",
+          "Click Submit to pay"
+        ]
+      },
+      {
+        "name": "Bank AL Habib",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payment",
+          "Select Register Biller and then Select Add New Biller",
+          "Select Kuickpay as Biller Group and then Select Kuickpay as Biller",
+          "Enter Consumer Number and click Submit to confirm details",
+          "Enter Financial Pin to complete Biller Registration",
+          "Select Pay Bill",
+          "Select Kuickpay - Relevant Bill Nick Name from Registered Billers",
+          "Confirm details and Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Bill Payment",
+          "Select Register Biller and then Select Add New Biller",
+          "Select Kuickpay as Biller Group and then Select Kuickpay as Biller",
+          "Enter Consumer Number and click Submit to confirm details",
+          "Enter Financial Pin to complete Biller Registration",
+          "Select Pay Bill",
+          "Select Kuickpay - Relevant Bill Nick Name from Registered Billers",
+          "Confirm details and Pay"
+        ],
+        "atm": [
+          "Visit Bank AL Habib ATM and insert your Bank AL Habib ATM Card",
+          "Select Bill Payment",
+          "Select Kuickpay as Biller",
+          "Enter Consumer Number and click Submit",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "Bank Alfalah",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Services and then Select Payments",
+          "Select Others and then Select Kuickpay as Company",
+          "Select Other as Beneficiary then Enter Consumer Number and click Fetch Details",
+          "Confirm details and Select Account or Credit Card",
+          "Click Pay Now to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Alfa Mobile Banking App",
+          "Expend (V) (down arrow) and select payments",
+          "Enter Consumer Number as Other and click Fetch Title",
+          "Confirm details and click Pay Now",
+          "Select Account, Credit Card or Wallet",
+          "Click Pay Now to Pay"
+        ],
+        "atm": [
+          "Visit Bank Alfalah ATM and insert your Bank Alfalah ATM Card",
+          "Select Bill Payment",
+          "Select Kuickpay as Biller in Others or Education",
+          "Enter Consumer Number and click Submit",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "BankIslami",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payments and then Select Bills / Payments Management",
+          "Click Add Bill / Payments",
+          "Select Others as Bill / Payment Category and then Select Kuickpay as Bill / Payment Company",
+          "Enter Consumer Number and then Enter Referance Name (for your own memorization). Click Next to confirm details",
+          "Enter OTP and click Confirm to complete Bill Registration",
+          "Select Pay Bills / Make Payments under Bill Payments",
+          "Select Others as Bill / Payment Category and then Select Kuickpay as Bill / Payment Company",
+          "Select Account and then Select Kuickpay - Referance Name from Beneficiary",
+          "Click Next to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payments and then Select Bills",
+          "Click (+) to Add Bill",
+          "Select Others as Bill Type and then Select Kuickpay as Company Type",
+          "Enter Consumer Number and click Confirm",
+          "Enter Referance Name (for your own memorization) and then Enter OTP. Click Confirm",
+          "Select Kuickpay - Relevant Bill Nick Name from Billing List",
+          "Confirm details and Pay"
+        ],
+        "atm": [
+          "Visit BankIslami ATM and insert your BankIslami ATM Card",
+          "Select Bill Payment",
+          "Select Others and then Select Kuickpay",
+          "Select Unregistered if paying for a new bill or Select Registered if the bill is previously registered, added or paid",
+          "Enter Consumer Number and click Continue",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "Bank of Khyber (BOK)",
+        "mobileBanking": [
+          "Login to your BOK Mobile Banking App and select Bill Payments",
+          "Select on Add+",
+          "Select Others",
+          "Select KUICKPAY",
+          "Enter Consumer Number and click Next",
+          "Verify Details and Enter OTP",
+          "Bill Added Successfully"
+        ]
+      },
+      {
+        "name": "Bank of Punjab (BOP)",
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Bill Payments",
+          "Click Add Bill Payee",
+          "Select Others as Payment Type, Select Others as Category, and then Select kuickpay as Company",
+          "Enter Consumer Number and click Next",
+          "Confirm details and click Confirm",
+          "Click OK to complete Add Bill Payee process",
+          "Click on Bill Payment while staying on Bill Payments option",
+          "Select your newly added Bill under Bill Payees",
+          "Select Account and click Next",
+          "Confirm details and click Confirm to Pay"
+        ],
+        "atm": [
+          "Visit BOP ATM and insert your BOP ATM Card",
+          "Select Bill Payment",
+          "Select Others and then Select Kuickpay",
+          "Enter Consumer Number",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "Dubai Islamic Bank (DIB)",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payment",
+          "Select Utility as Service Type, Select KPay as Service",
+          "Select One Time Payment if paying for a new bill or Select Bill from Registered Bill if the bill is previously registered, added or paid",
+          "Enter (for One Time Payment) or Select (for Bill from Registered Bill) Consumer Number and click Get Bill",
+          "Confirm details and Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Bill Payment",
+          "Select Utility as Service Type, Select KPay as Service",
+          "Select One Time Payment if paying for a new bill or Select Bill from Registered Bill if the bill is previously registered, added or paid",
+          "Enter (for One Time Payment) or Select (for Bill from Registered Bill) Consumer Number and click Get Bill",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "Digitt+",
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payment",
+          "Select Category ‘Kuickpay’, & company ‘Kuickpay’",
+          "Enter Kuickpay id & press ‘Submit’",
+          "Verify the payment details & click on ‘Pay Now’",
+          "Enter 5 Digit Pin, after pin verification",
+          "Payment will be done successfully"
+        ]
+      },
+      {
+        "name": "EasyPaisa App",
+        "mobileApp": [
+          "Login to your EasyPaisa Mobile App",
+          "Select more",
+          "Select Others under Bill Payment",
+          "Select KuickPay",
+          "Enter Consumer Number and click Next",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "Faysal Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Payments and then Select Bill Payments",
+          "Select Kuickpay as Category/Company",
+          "Enter Consumer Number and fetch details",
+          "Confirm details and click Pay Now to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payments and then Select Bill Payments",
+          "Select Kuickpay as Category/Company",
+          "Enter Consumer Number and fetch details",
+          "Confirm details and click Pay Now to Pay"
+        ]
+      },
+      {
+        "name": "First Women Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payments",
+          "Select Kuickpay",
+          "Enter Consumer Number and fetch details",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "HabibMetro Bank (HMB)",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Online Payments/Bill Payments and then Select Utility/Others",
+          "Select Educational Fee as Utility Type and then Select Kuick Pay as Utility Name",
+          "Enter Consumer Number and click Proceed",
+          "Confirm details, Get and Enter Verification Code",
+          "Click Proceed to pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payments & Transfers and then Select Payment",
+          "Select Payment to Non-Beneficiary",
+          "Select Educational Fee",
+          "Select Kuick Pay as Company Name under Billing List",
+          "Enter Consumer Number and click Confirm",
+          "Confirm details, if asked, Generate and Enter Verification Code/OTP",
+          "Click Confirm and proceed to pay"
+        ],
+        "atm": [
+          "Visit HMB ATM and insert your HMB ATM Card",
+          "Select Bill Payment",
+          "Select Educational Fee/Others and then Select Kuickpay",
+          "Enter Consumer Number",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "HBL",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Pay and then Select Add New Option",
+          "Select KuickPay and then Select KuickPay",
+          "Enter Consumer Number and click Next",
+          "Confirm details and then click Next",
+          "Enter One Time Password and then enter Transaction Password",
+          "Click Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select More",
+          "Select KuickPay under Payments",
+          "Click on (+) and then select KuickPay as Company",
+          "Enter Consumer Number and click Next",
+          "Confirm Details and then click Next",
+          "Enter One Time Password (OTP) and click Next to Pay"
+        ]
+      },
+      {
+        "name": "JazzCash App",
+        "mobileApp": [
+          "Login to your JazzCash Mobile App",
+          "Select corporate payments",
+          "Select Kuickpay",
+          "Enter Consumer ID and fetch details",
+          "Enter MPIN and Proceed to pay"
+        ]
+      },
+      {
+        "name": "JS Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payment and then Select Bill Registration",
+          "Select Service Type as DIGITALPAYMETS and then Select Service as KUICKPAY",
+          "Enter Consumer Number and then enter Consumer Nick as per your convenience",
+          "Generate and Enter email/mobile Tokens and Click Register",
+          "Locate your newly Added Bill in the Registered Services list and Click on Pay Now",
+          "Review your transaction details, Enter your Financial PIN and Click Confirm to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Pay and then Select Corporate Payments",
+          "Click on Add Payee then Select KUICKPAY as company",
+          "Enter Consumer Number and then enter Consumer Nick as per your convenience",
+          "Generate and Enter email/mobile Tokens and Click Register",
+          "Locate your newly Added Bill and proceed for Payment",
+          "Review your transaction details, if asked, Enter your Financial PIN and proceed to Pay"
+        ]
+      },
+      {
+        "name": "Keenu App",
+        "mobileApp": [
+          "Login to your Keenu Mobile App",
+          "Select Mobile & Bill Payment",
+          "Click (+) and then Click Add a Bill",
+          "Select Digital Vouchers as Bill Type and then Select KuickPay as Company",
+          "Enter Consumer Number and then Enter Short Name as per your convenience",
+          "Click Next and Enter One Time Password",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "MCB bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payment",
+          "Select Register Biller and then Click Add New Biller",
+          "Select Customer and then Select Innovarge(Kuick Pay) as Biller",
+          "Enter Consumer Number and then Enter Nick Name as per your convenience",
+          "Click Submit and then Click Confirm",
+          "Enter Transaction Pin and then Click Submit",
+          "Click OK to complete Biller Registration",
+          "Select Pay Bill",
+          "Select Customer and then Select your newly added KuickPay Bill as Biller, Select Account and then Click Submit",
+          "Verify details and then Click Confirm to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payments and then Select Utility Bill Payment",
+          "Select Add Beneficiary for new Bill or skip to step 9 for Payment of existing bill",
+          "Select Utility Bill Payment under Add Payment Beneficiary",
+          "Select KuickPay from the list",
+          "Enter Consumer Number and then Enter Beneficiary's Name as per your convenience. Click Submit",
+          "Confirm Details and then Click Submit",
+          "Enter OTP and then Click Submit to complete Add Payments Beneficiary process",
+          "Select Payments from Main Menu then Select your newly added KuickPay bill, Click Next",
+          "Verify details and Click Submit to Pay"
+        ]
+      },
+      {
+        "name": "MCB Islamic Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Payments and then Select Add Payee",
+          "Select Utility as Payee Type and then Select KuickPay as Payee Name",
+          "Enter Consumer Number and complete the Bill Registration process",
+          "Select Pay Bill and then Select your newly added KuickPay bill, Click Pay Now",
+          "Verify details and Click Confirm to Pay"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payments and then Select Add Payee",
+          "Select Utility as Payee Type and then Select KuickPay as Payee Name",
+          "Enter Consumer Number and complete the Bill Registration process",
+          "Select Pay Bill and then Select your newly added KuickPay bill, Click Pay Now",
+          "Verify details and Click Confirm to Pay"
+        ]
+      },
+      {
+        "name": "Meezan Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Bill Payments and then Select Add Bills & Mobile No",
+          "Select KUICKPAY",
+          "Enter Consumer Number and then Enter nickname as per your convenience, Click Next",
+          "Enter Passcode and then Click Next",
+          "Click Pay Now on Bill Registration Confirmation screen",
+          "Confirm details and Click Next",
+          "Click Pay on Confirmation screen"
+        ],
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Bills & Top up and then Select Add Bills & Mobile Number",
+          "Select KUICKPAY",
+          "Enter Consumer Number and then Click Next",
+          "Enter Nickname as per your convenience and then Click Add",
+          "Click Pay Now on Bill Registration Confirmation screen",
+          "Select your newly added KuickPay bill",
+          "Verify details and Click Confirm to Pay"
+        ],
+        "atm": [
+          "Visit Meezan Bank ATM and insert your Meezan Bank ATM Card",
+          "Select Bill Payment",
+          "Select Others/Education and then Select Kuickpay",
+          "Select NO if paying for a new bill or Select YES if the bill is previously registered, added or paid",
+          "Enter Consumer Number and click OK",
+          "Confirm details and Click Continue to Pay"
+        ]
+      },
+      {
+        "name": "National Bank of Pakistan (NBP)",
+        "mobileBanking": [
+          "Login to your Mobile Banking App",
+          "Select Payments",
+          "Search and Select kuickpay as Biller/Company. (If asked, Register Bill)",
+          "Enter Consumer Number and fetch details",
+          "If asked, Enter PIN/OTP",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "NRSP Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Payments/Bill Payments",
+          "Search and Select kuickpay as Biller/Company. (If asked, Register Bill)",
+          "Enter Consumer Number and fetch details",
+          "If asked, Enter PIN/OTP",
+          "Confirm details and Pay"
+        ]
+      },
+      {
+        "name": "SAMBA Bank",
+        "internetBanking": [
+          "Login to your Internet Banking",
+          "Select Payments/Bill Payments",
+          "Search and Select kuickpay as Biller/Company. (If asked, Register/Add Bill)",
+          "Enter Consumer Number and fetch details",
+          "If asked, Enter PIN/OTP",
+          "Confirm details and Pay"
+    ]}
+        ]}
+        

@@ -4,23 +4,23 @@ import React, { useEffect, useState,useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { useQRCode } from 'next-qrcode';
-import axiosInstance, { createAxiosInstance } from '../constants/axiosInstance'; 
+import axiosInstance, { createAxiosInstance } from '../../constants/axiosInstance'; 
 import CryptoJS from 'crypto-js';
 import Image from 'next/image';
-import CreditCardIcon from '../components/svgs/CreditCard.svg';
-import IntMobBankingIcon from '../components/svgs/intMbanking.svg';
-import QRCodeIcon from '../components/svgs/QR.svg';
-import copyicon from '../components/svgs/copy.svg';
-import qrgen from '../components/Images/qrgen.png';
-import Header from '../components/header';
-import Footer from '../components/footer';
-import PoweredByPFRaast from '../components/svgs/poweredby.svg';
-import logo from '../components/Images/kuickpay-logo.png';
-import logosvg from '../components/svgs/kuickpay.svg';
+import CreditCardIcon from '../../components/svgs/CreditCard.svg';
+import IntMobBankingIcon from '../../components/svgs/intMbanking.svg';
+import QRCodeIcon from '../../components/svgs/QR.svg';
+import copyicon from '../../components/svgs/copy.svg';
+import qrgen from '../../components/Images/qrgen.png';
+import Header from '../../components/header';
+import Footer from '../../components/footer';
+import PoweredByPFRaast from '../../components/svgs/poweredby.svg';
+import logo from '../../components/Images/kuickpay-logo.png';
+import logosvg from '../../components/svgs/kuickpay.svg';
 
-import { API_URLS } from '../constants/config';
+import { API_URLS } from '../../constants/config';
 import html2canvas from 'html2canvas';
-import EncryptionUtils from "../utils/encryptionUtils";
+import EncryptionUtils from "../../utils/encryptionUtils";
 
 
 const PaymentInitilization = () => {
@@ -41,8 +41,8 @@ const PaymentInitilization = () => {
     const [isWhiteLabled, setIsWhilteLabled] = useState(false);
     const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
      const [logoLoader, setLogoLoader] = useState(true);
-    const { encryptData } = require('../utils/encryptUtils');
-    const { decryptData } = require('../utils/decryptUtils');
+    const { encryptData } = require('../../utils/encrypText');
+    const { decryptData } = require('../../utils/decryptUtils');
     const [qRString ,setQRString] = useState("Waiting for Data");
     const hiddenRef = useRef();
     const { Canvas } = useQRCode();
@@ -72,11 +72,11 @@ const PaymentInitilization = () => {
 
     useEffect(() => {
         const consumerDataEnc = searchParams.get('data');
-        console.log(consumerDataEnc,"Before dec");
+        //console.log(consumerDataEnc,"Before dec");
         if (consumerDataEnc) {
             try {
                  const consumerDataEncDec = JSON.parse(EncryptionUtils.decryptText(consumerDataEnc)); // Use the same key
-                 console.log(consumerDataEncDec,"Deceptted");
+                 //console.log(consumerDataEncDec,"Deceptted");
                 if(!consumerDataEncDec.kuickpayID){
                   //router.replace('/');
                 }
@@ -110,7 +110,7 @@ const PaymentInitilization = () => {
 
     const fetchBill = async (decryptedData) => {
      
-      //console.log(sessionStorage.getItem('authToken'),"Session Variable");
+      ////console.log(sessionStorage.getItem('authToken'),"Session Variable");
        if(!sessionStorage.getItem('authToken')){
         
              const AppAxios = createAxiosInstance({
@@ -149,12 +149,12 @@ const PaymentInitilization = () => {
             
             if (response.data.voucherData.response_Code == "00" && response.data.voucherData.bill_Status == "U") {
              
-             // console.log("::::::::::::Only when response code 00 and status U ::::::::::::");
+             // //console.log("::::::::::::Only when response code 00 and status U ::::::::::::");
                 setInquiryStatus(true)
                 setVoucherData(response.data.voucherData);
                 setInstitutionData(response.data.institution);
-                // console.log(response.data.institution);
-                // console.log(response.data.voucherData);
+                //console.log(response.data);
+                // //console.log(response.data.voucherData);
                 const token =sessionStorage.getItem('authToken');
                 //QR Generation //
                 const sessionQRstring =sessionStorage.getItem('QRstring');
@@ -165,8 +165,8 @@ const PaymentInitilization = () => {
                 //QR Generation //
                 }
                 else{
-                  // console.log("exist");
-                  // console.log(sessionQRstring);
+                  // //console.log("exist");
+                  // //console.log(sessionQRstring);
                   setQRString(sessionQRstring);
                   setIsQrLoading(false)
                 }
@@ -180,7 +180,7 @@ const PaymentInitilization = () => {
                 else{
                   setLogoLoader(false);
                 }
-                 // console.log(response.data.institution.checkoutLogo.trim());
+                 // //console.log(response.data.institution.checkoutLogo.trim());
                  const dataBus = { 
                   Institution: response.data.institution, 
                   voucherData: response.data.voucherData,
@@ -199,7 +199,7 @@ const PaymentInitilization = () => {
   
                    }
                 )));
-                //console.log(response.data.institution.checkoutLogo);
+                ////console.log(response.data.institution.checkoutLogo);
                
                 // Check if due_date exists and is valid, then format it
                 if (response.data.voucherData.due_Date && !isNaN(new Date(response.data.voucherData.due_Date))) {
@@ -219,8 +219,8 @@ const PaymentInitilization = () => {
               
               setVoucherData(response.data.voucherData);
               setInstitutionData(response.data.institution);
-              console.log(response.data.institution);
-              console.log(response.data.voucherData);
+              //console.log(response.data.institution);
+              //console.log(response.data.voucherData);
               if (response.data.institution.checkoutLogo !== '') {
                   
                 setIsWhilteLabled(true);
@@ -233,18 +233,18 @@ const PaymentInitilization = () => {
               }
                 if(response.data.voucherData.response_Code == "01")
                   {
-                      console.log(":::::::: Invalid Voucher:::::::::")
+                      //console.log(":::::::: Invalid Voucher:::::::::")
                   }
                   else if(response.data.voucherData.response_Code == "02")
                   {
-                    console.log(":::::::: Expired/Blocked Voucher:::::::::")
+                    //console.log(":::::::: Expired/Blocked Voucher:::::::::")
                   }
                   setInquiryStatus(false)
 
             }
             // else {
 
-            //     console.log('Response code:', response.data.response_code);
+            //     //console.log('Response code:', response.data.response_code);
             // }
 
         } catch (error) {
@@ -262,16 +262,16 @@ const PaymentInitilization = () => {
         token: tokenization,
       });
       //const authToken = tokenization;
-      console.log("🚀 ~ qrcode ~  institution, consumer, amount:", institution, consumer, amount)
+      //console.log("🚀 ~ qrcode ~  institution, consumer, amount:", institution, consumer, amount)
       const payload = {
           'InstitutionID': institution,
           'ConsumerNumber': consumer,
           'Amount': amount,
       };
       try {
-        //console.log("🚀 ~ qrcode ~  institution, consumer, amount:",payload)
+        ////console.log("🚀 ~ qrcode ~  institution, consumer, amount:",payload)
         const response = await QRAxios.post(`/api/Core/Raast/QR/Web/Dynamic`, payload);
-        //console.log("🚀 ~ qrcode ~  institution, consumer, amount:", response)
+        ////console.log("🚀 ~ qrcode ~  institution, consumer, amount:", response)
         if (response.status === 200) {
          
 
@@ -301,7 +301,7 @@ const PaymentInitilization = () => {
     const CardPayNowOnClick = () =>
       {
 
-          router.push(`/cardinfo`);
+          router.push(`/pages/cardinfo`);
 
 
       } 
@@ -478,7 +478,7 @@ const PaymentInitilization = () => {
                                                           {institutionData.amount_Currency} {voucherData.billAmount}
                                                           </p>
                                                          
-                                                          <p className='xsize:text-[10px] lg:text-[12px] ' style={{ color: '#999' }}>This QR code will expire on {voucherData.due_Date} n</p>
+                                                          <p className='xsize:text-[10px] lg:text-[12px] ' style={{ color: '#999' }}>This QR code will expire on {voucherData.due_Date}</p>
                                                           <div className='flex justify-center' >  
                                                              <Image src={PoweredByPFRaast} alt="My Icon" className="w-14"  />
                                                              </div>
