@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
-    "crypto-js": "^4.2.0",
+    "crypto-js": "^4.1.1",
     "html2canvas": "^1.4.1",
     "next": "^14.2.33",
     "next-qrcode": "^2.5.1",

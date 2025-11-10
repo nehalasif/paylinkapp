@@ -98,7 +98,7 @@ const CardInfo = () => {
     // Card Number Validation (16 digits, numeric)
     const cardRegex = /^\d{4}-\d{4}-\d{4}-\d{4}$/;
     if (!cardRegex.test(cardNumber)) {
-      newErrors.cardNumber = 'Enter a valid card number (16 digits in xxxx-xxxx-xxxx-xxxx format).';
+      newErrors.cardNumber = 'Enter a valid card number (16 digits in xxx-xxxx-xxxx-xxxx format).';
     }
 
     // Expiry Month Validation (01-12)
