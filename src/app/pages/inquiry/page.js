@@ -250,7 +250,7 @@ const PaymentInitilization = () => {
     const { Canvas } = useQRCode();
     const [isHowToPayModalOpen, setIsHowToPayModalOpen] = useState(false);
   
-    const handleToggle = (index) => {
+    const handleToggle = (index) => { 
         setExpanded(expanded === index ? null : index);
     };
 
