@@ -1,73 +1,74 @@
-import React from 'react';
-import Image from 'next/image';
+'use client';
 
-const SearchableTextbox = ({ 
-  placeholder, 
-  options, 
-  searchText, 
-  setSearchText, 
-  isOpen, 
-  setIsOpen, 
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import SearchIcon from '../components/svgs/cardinfo/search.svg';
+
+const SearchableTextbox = ({
+  placeholder,
+  options,
+  searchText,
+  setSearchText,
+  isOpen,
+  setIsOpen,
   onSelect,
-  Icon,  // यह prop बाहर से आएगा
-  isLoading,
-  disabled,
-  ...props 
 }) => {
-  
-  const handleInputChange = (e) => {
-    setSearchText(e.target.value);
-    if (!isOpen) {
-      setIsOpen(true);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setIsOpen(false);
     }
   };
 
-  const handleSelectOption = (option) => {
-    onSelect(option);
-    setSearchText(option);
-    setIsOpen(false);
+  // useEffect(() => {
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => document.removeEventListener('mousedown', handleClickOutside);
+  // }, []);
+
+  const handleItemClick = (option) => {
+    setSearchText(option);  // Update searchText with selected option
+    onSelect(option);        // Notify parent component
+    setIsOpen(false);        // Close the dropdown after selection
   };
 
   return (
     <div className="relative">
-      
-      {/* यह हिस्सा तभी रेंडर होगा जब 'Icon' prop पास किया जाएगा */}
-      <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-        {Icon && <Image src={Icon} alt="Icon" className="w-6 h-6" />}
+      {/* Search input */}
+      <div
+        className="flex items-center w-full px-2 py-2 border rounded-lg bg-white"
+        onClick={() => setIsOpen(true)} // Open dropdown when clicked
+      >
+        <Image src={SearchIcon} alt="Search Icon" className="w-6 h-6" />
+        <input
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)} // Update search text
+          placeholder={placeholder}
+          className="px-5 w-full h-max focus:outline-none"
+        />
       </div>
 
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={searchText}
-        onChange={handleInputChange}
-        onFocus={() => !disabled && setIsOpen(true)}
-        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-        disabled={disabled}
-        // pl-12 (padding-left) जरूरी है ताकि टेक्स्ट आइकन के ऊपर न आए
-        className="w-full p-2 pl-12 pr-10 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287dce] disabled:bg-gray-100 disabled:cursor-not-allowed"
-        {...props}
-      />
-
-      {/* लोडिंग स्पिनर */}
-      {isLoading && (
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <div className="w-5 h-5 border-2 border-gray-200 border-t-[#287dce] rounded-full animate-spin"></div>
-        </div>
-      )}
-
-      {/* ड्रॉपडाउन */}
-      {isOpen && options.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-          {options.map((option, index) => (
-            <li
-              key={index}
-              className="p-2 cursor-pointer hover:bg-gray-100"
-              onMouseDown={() => handleSelectOption(option)}
-            >
-              {option}
-            </li>
-          ))}
+      {/* Dropdown with filtered options */}
+      {isOpen && ( //&& searchText 
+        <ul
+          ref={dropdownRef}
+          className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-52 overflow-auto"
+        >
+          {options.length > 0 ? (
+            options.map((option, index) => (
+              <li
+                key={index}
+                className="px-4 py-2 cursor-pointer hover:bg-blue-100"
+                onClick={() => handleItemClick(option)} // Handle item selection
+              >
+                {option}
+              </li>
+            ))
+          ) : (
+            <li className="px-4 py-2 text-gray-500">No results found</li>
+          )}
         </ul>
       )}
     </div>

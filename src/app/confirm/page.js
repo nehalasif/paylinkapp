@@ -2,16 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // For navigation
-import Header from '../../components/header';
-import Footer from '../../components/footer';
-import CryptoJS from 'crypto-js';
+import Header from '../components/header';
+import Footer from '../components/footer';
 import axios from 'axios';
-import { API_URLS } from '../../constants/config.js';
-import axiosInstance, { createAxiosInstance } from '../../constants/axiosInstance';
-import logo from '../../components/Images/kuickpay-logo.png';
-import EncryptionUtils from "../../utils/encryptionUtils";
-import encryptData from "../../utils/encrypText"
-
+import { API_URLS } from '../constants/config.js';
+import axiosInstance, { createAxiosInstance } from '../constants/axiosInstance';
+import logo from '../components/Images/kuickpay-logo.png';
+import EncryptionUtils from "../utils/encryptionUtils";
 
 const PaymentConfirmation = () => {
   const router = useRouter();
@@ -26,71 +23,109 @@ const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
      const [logoLoader, setLogoLoader] = useState(true);
  
 
-  useEffect(() => {
-    const fetchData = async () => {
+ useEffect(() => {
+  console.log(" [useEffect] Starting fetchData...");
 
-      const checkoutAxios = createAxiosInstance({
-        baseURL: API_URLS.gatewayUrl,
-        token: '',
-      });
+  const fetchData = async () => {
+    console.log(fetchData,"Creating Axios instance...");
+    const checkoutAxios = createAxiosInstance({
+      baseURL: API_URLS.gatewayUrl,
+      token: '',
+    });
 
-      try {
-        const GetDatafromInquiry = sessionStorage.getItem('dataBus');
-        if (GetDatafromInquiry) {
-          const decryptedData = JSON.parse(EncryptionUtils.decryptText(sessionStorage.getItem('dataBus')));
-          ///console.log(decryptedData);
-          if (decryptedData) {
-            setData({
-              voucherData: decryptedData.voucherData,
-              institution: decryptedData.Institution,
+    try {
+      console.log(" [fetchData] Reading 'dataBus' from sessionStorage...");
+      const GetDatafromInquiry = sessionStorage.getItem('dataBus');
+      console.log(" [sessionStorage.dataBus]:", GetDatafromInquiry);
+
+      if (GetDatafromInquiry) {
+        console.log(" [decrypt] Decrypting 'dataBus'...");
+        const decryptedData = JSON.parse(EncryptionUtils.decryptText(GetDatafromInquiry));
+        console.log(" [decryptedData]:", decryptedData);
+
+        if (decryptedData) {
+          console.log("[setData] Setting local state from decryptedData...");
+          setData({
+            voucherData: decryptedData.voucherData,
+            institution: decryptedData.Institution,
+            kuickpayID: decryptedData.kuickpayID,
+          });
+
+          console.log(" [Logo] Checking white-labeled logo...");
+          if (decryptedData.whitelabledLogo !== "") {
+            console.log(" [Logo] Found white-labeled logo:", decryptedData.whitelabledLogo);
+            setwhiteLabledLogo(decryptedData.whitelabledLogo);
+            setLogoLoader(false);
+          } else {
+            console.log(" [Logo] No white-labeled logo, using default.");
+            setLogoLoader(false);
+          }
+
+          // the bearer token
+          console.log(" [Token] Generating encryption params...");
+          const params =
+            decryptedData.Institution?.institutionID +
+            '4uNuf29HnlFG7PGwek8IRgx6gDhOaE8WiPUwYkM572zbuhnyzq6HsPtuVu9M3JbD';
+          console.log(" [Token Params]:", params);
+
+          const encryptedData = EncryptionUtils.encryptText(params).toString();
+          console.log("[Encrypted Params]:", encryptedData);
+
+          const param = {
+            ObjectValue: encryptedData,
+          };
+          console.log(" [Token API Payload]:", param);
+
+          console.log(" [API] Requesting public token from KuickPay...");
+          const gatewayTokenResponse = await axios.post(
+            'https://testcheckout.kuickpay.com/api/KPPublicToken',
+            param
+          );
+
+          console.log(" [Token Response]:", gatewayTokenResponse.data);
+
+          const { auth_token } = gatewayTokenResponse.data;
+          console.log("🪙 [auth_token]:", auth_token);
+
+          setToken(auth_token);
+
+          if (gatewayTokenResponse?.data?.responseCode === '00') {
+            console.log(" [Token Success] Token accepted, continuing...");
+
+            console.log(" [sessionStorage.localstored]:", sessionStorage.getItem('localstored'));
+            const localstoredRaw = sessionStorage.getItem('localstored');
+            const localstored = EncryptionUtils.decryptText(localstoredRaw);
+            console.log("[Decrypted localstored]:", localstored);
+
+            console.log(" [fetchPlatformFee] Calling with:", {
+              auth_token,
+              institutionID: decryptedData.Institution?.institutionID,
+              billAmount: decryptedData.voucherData?.billAmount,
               kuickpayID: decryptedData.kuickpayID,
             });
 
-            if(decryptedData.whitelabledLogo !== ""){
-             
-              setwhiteLabledLogo(decryptedData.whitelabledLogo);
-              setLogoLoader(false);
-            }
-            else{
-              setLogoLoader(false);
-            }
+            await fetchPlatformFee(auth_token, decryptedData, localstored);
 
-            // Fetch the bearer token
-            const params =
-              decryptedData.Institution?.institutionID +
-              '4uNuf29HnlFG7PGwek8IRgx6gDhOaE8WiPUwYkM572zbuhnyzq6HsPtuVu9M3JbD';
-            const encryptedData = EncryptionUtils.encryptText(params) // Encrypting the params
-              // console.log(params);
-              // console.log(encryptedData);
-            const param = {
-              ObjectValue: encryptedData,
-            };
-            // const gatewayTokenResponse = await checkoutAxios.post('/api/KPPublicToken', param);
-            // const param = {
-            //   ObjectValue: "EERCVsTSNRKoQfm48ZDRIlC8k20rS82mmDgz32Ze+tBkys6x985Mz/+Y8XqaXPsI7EEaaGkssnaHkjSxqGGM3dwEaOztwxf0yfZm7D9AUYo=",
-            // };
-            const gatewayTokenResponse = await axios.post(API_URLS.gatewayUrl+'/api/KPPublicToken', param);
-            
-            const { auth_token } = gatewayTokenResponse.data;
-            
-            setToken(auth_token);
-   
-            if (gatewayTokenResponse?.data?.responseCode === '00') {
-              
-              await fetchPlatformFee(auth_token, decryptedData);
-              
-             
-            }
+            console.log(" [Card Info] localstored:", sessionStorage.getItem('localstored'));
+          } else {
+            console.warn(" [Token Error] Invalid response code:", gatewayTokenResponse.data);
           }
+        } else {
+          console.error(" [fetchData] decryptedData is null or undefined!");
         }
-      } catch (error) {
-        console.error('Error during API calls:', error);
+      } else {
+        console.error(" [fetchData] 'dataBus' not found in sessionStorage!");
       }
-    };
+    } catch (error) {
+      console.error(" [fetchData] Error during API calls:", error);
+    } finally {
+      console.log(" [fetchData] Completed execution.");
+    }
+  };
 
-    fetchData();
-    
-  }, []); // Run once on page load
+  fetchData();
+}, []);
+// Run once on page load
 
    const finalLogo =
       whiteLabledLogo && whiteLabledLogo.trim() !== ''
@@ -98,10 +133,12 @@ const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
               : logo;
 
   const fetchPlatformFee = async (auth_token, decryptedData) => {
-   
-      const parsedData = JSON.parse(EncryptionUtils.decryptText(sessionStorage.getItem("localstored"))); // Parse the JSON string back to an object
+    const savedData = sessionStorage.getItem("localstored"); // Retrieve the saved JSON string
+     
+      const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
       const cardNumber = parsedData.cardNumber.replace(/-/g, "").slice(0, 6); // Access the cardNumber field
-      
+      console.log("Card Number:", cardNumber); // Output the card number
+     
     if(auth_token && cardNumber){
 try {
   const platformFeeParams = {
@@ -121,7 +158,7 @@ try {
   });
 
       if (response?.data?.responseCode === '00') {
-        
+        console.log(response.data);
          const FeeData =response.data;     //sessionStorage.setItem('getFee', encryptData(JSON.stringify(response.data)));
         
         setFeeData(FeeData);
@@ -138,7 +175,7 @@ try {
   };
   
   const PayNowButtonEvent = async () => {
-    const savedData = EncryptionUtils.decryptText(sessionStorage.getItem("localstored")); // Retrieve the saved JSON string
+    const savedData = sessionStorage.getItem("localstored"); // Retrieve the saved JSON string
      
       const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
       const cardNumber = parsedData.cardNumber.replace(/-/g, ""); // Access the cardNumber field
@@ -192,7 +229,7 @@ try {
            // Include token in Authorization header
         },
       });
-    
+      
           if(response?.status === 200)  {
             
             console.log("::Payload k andr wala::");
@@ -224,7 +261,7 @@ try {
               sessionStorage.setItem("htmlContent", response?.data?.returnHTML);
               
                
-                  router.push('./processHTML');
+                  router.push('./pages/processHTML');
               
             }
           else 
@@ -271,11 +308,11 @@ try {
               <div className="border-t mt-2"></div>
 
               <div className="px-2 pt-4 flex justify-between items-center">
-                <p className="InvSumContent">Bill Amount</p>
+                <p className="InvSumContent">Bill Amount:</p>
                 <p className="InvSumContentweight">PKR {feeData.amount}0</p>
               </div>
               <div className="px-2 pt-2 flex justify-between items-center">
-                <p className="InvSumContent">Platform fee</p>
+                <p className="InvSumContent">Platform fee:</p>
                 <p className="InvSumContentweight">PKR {feeData.platformFee}</p>
               </div>
 
@@ -285,7 +322,7 @@ try {
               </p>
 
               <div className="px-2 pt-5 flex justify-between items-center">
-                <p className="text-lg font-light">Payable Amount</p>
+                <p className="text-lg font-light">Payable Amount:</p>
                 <p className="font-medium text-lg">PKR {feeData.payableAmount}</p>
               </div>
 

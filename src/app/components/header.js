@@ -57,7 +57,7 @@ const Header = ({Heading,logo,classType,width,height,logoLoader}) => {
             {/* Payment Link Section */}
             <div style={{ backgroundColor: '#E3EBF2' }}
                 className="rounded-md p-3 ml-5 mr-5 sm:p-2 sm:py-2 sm:ml-5 sm:mr-5 md:p-4 md:py-2 py- lg:py-2  flex justify-center items-center">
-                <h2 className="font-outfit text-base md:text-3xl  text-center">
+                <h2 className="font-outfit text-base md:text-2xl lg:text-4xl text-center">
                     <div>
                         <p className="heading tracking-widest">{Heading}</p>
                     </div>
