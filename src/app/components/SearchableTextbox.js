@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import SearchIcon from '../components/svgs/cardinfo/search.svg';
+import SearchIcon from './svgs/cardinfo/search.svg'; // Path check kar lijiyega
 
 const SearchableTextbox = ({
   placeholder,
@@ -15,59 +15,61 @@ const SearchableTextbox = ({
 }) => {
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
   const handleClickOutside = (e) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
       setIsOpen(false);
     }
   };
 
-  // useEffect(() => {
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => document.removeEventListener('mousedown', handleClickOutside);
-  // }, []);
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleItemClick = (option) => {
-    setSearchText(option);  // Update searchText with selected option
-    onSelect(option);        // Notify parent component
-    setIsOpen(false);        // Close the dropdown after selection
+    setSearchText(option);
+    onSelect(option);
+    setIsOpen(false); // Standard UX: Select karne ke baad list band honi chahiye
   };
 
   return (
-    <div className="relative">
-      {/* Search input */}
+    <div className="relative" ref={dropdownRef}>
+      
+      {/* Search Input Container */}
+      {/* Yahan bg-gray-100 hai */}
       <div
-        className="flex items-center w-full px-2 py-2 border rounded-lg bg-white"
-        onClick={() => setIsOpen(true)} // Open dropdown when clicked
+        className="flex items-center w-full px-2 py-2 border border-gray-100 rounded-lg bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-400 transition-all"
+        onClick={() => setIsOpen(true)}
       >
-        <Image src={SearchIcon} alt="Search Icon" className="w-6 h-6" />
+        <Image src={SearchIcon} alt="Search Icon" className="w-6 h-6 ml-1 " />
+        
         <input
           type="text"
           value={searchText}
-          onChange={(e) => setSearchText(e.target.value)} // Update search text
-          placeholder={placeholder}
-          className="px-5 w-full h-max focus:outline-none"
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder={'Search Your Biller'}
+          // IMPORTANT: 'bg-transparent' add kiya hai taake peeche ka gray color nazar aye
+          className="px-3 w-full h-full focus:outline-none bg-transparent text-slate-700 placeholder-slate-500"
         />
       </div>
 
-      {/* Dropdown with filtered options */}
-      {isOpen && ( //&& searchText 
+      {/* Dropdown List */}
+      {isOpen && (
         <ul
-          ref={dropdownRef}
-          className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-52 overflow-auto"
+          className="absolute z-20 w-full mt-1 bg-gray-100 border border-gray-200 rounded-lg shadow-xl max-h-44 overflow-y-auto"
         >
           {options.length > 0 ? (
             options.map((option, index) => (
               <li
                 key={index}
-                className="px-4 py-2 cursor-pointer hover:bg-blue-100"
-                onClick={() => handleItemClick(option)} // Handle item selection
+                className="px-4 py-2 cursor-pointer hover:bg-blue-100 text-slate-700 hover:text-blue-700 transition-colors"
+                onClick={() => handleItemClick(option)}
               >
                 {option}
               </li>
             ))
           ) : (
-            <li className="px-4 py-2 text-gray-500">No results found</li>
+            <li className="px-4 py-2 text-gray-500 text-sm italic">No results found</li>
           )}
         </ul>
       )}

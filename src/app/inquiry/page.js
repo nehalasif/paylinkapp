@@ -290,17 +290,36 @@ const PaymentInitilization = () => {
 
     const backtoHome = () => router.push('/');
 
+    // ============================================
+    // FIXED FUNCTION IS HERE
+    // ============================================
     const generateQRCode = async (tokenization, institution, consumer, amount) => {
+      // Loader shuru karein
+      setIsQrLoading(true);
+      
       const QRAxios = createAxiosInstance({ baseURL: "https://uatraast.kuickpay.com", token: tokenization });
       const payload = { 'InstitutionID': institution, 'ConsumerNumber': consumer, 'Amount': amount };
+      
       try {
-        const response = await QRAxios.post(`/api/Core/Raast/QR/Web/Dynamic`, payload);
-        if (response.status === 200 && response.data.response_Code === '00') {
+        const response = await QRAxios.post(`/api/Core/Raast/QR/Web/Dynamic`, payload, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        // Check if response exists and status is 200
+        if (response && response.status === 200 && response.data.response_Code === '00') {
             setQRString(response.data.qrString);
             sessionStorage.setItem('QRstring', response.data.qrString);
-            setIsQrLoading(false);
+        } else {
+            setQRString("Error Generating QR");
         }
-      } catch (error) { console.error('Error generating QR:', error); }
+      } catch (error) { 
+        console.error('Error generating QR:', error); 
+        // Error ki soorat mein string update karein taake user ko pata chale
+        setQRString("Network Error");
+      } finally {
+        // SUCCESS HO YA FAIL, LOADER BAND KARNA ZAROORI HAI
+        setIsQrLoading(false);
+      }
     };
     
     const CardPayNowOnClick = () => router.push(`/cardinfo`);
@@ -345,102 +364,200 @@ const PaymentInitilization = () => {
                 {inquiryStatus && voucherData && institutionData ? (  
                     <div className="flex flex-col md:flex-row gap-6 p-4 md:p-6 lg:p-8 relative">
                         {/* --- PAYMENT METHODS SECTION --- */}
-                        <div className="w-full py-3 md:w-6/12 order-2 md:order-1">
-                            <h2 className="ml-10 content tracking-widest text-xl lg:text-lg md:text-sm "> Payment Methods</h2>
-                            <div className=" xsize:mr-10">
-                                {/* Card Payment */}
-                                <div className="flex items-center" onClick={() => handleToggle(0)}>
-                                    <div className="cursor-pointer p-4 flex justify-between items-center w-full">
-                                        <div className="content flex items-center">
-                                            <Image src={CreditCardIcon} alt="Card Icon" className="w-20 h-8" />
-                                            <p className='p-4 text-md xsize:text-sm text-gray-600 '>Pay via Cards & Bank Account</p>
-                                        </div>
-                                        <div className={`content transform transition-transform ${expanded === 0 ? "rotate-180" : ""}`}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg></div>
-                                    </div>
-                                </div>
-                                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === 0 ? 'max-h-96' : 'max-h-0'}`}>
-                                    <div className="flex justify-end p-4">
-                                        <div className="flex lg:flex-row justify-end items-end w-full gap-x-3">
-                                            <button onClick={CardPayNowOnClick} className="content-white bg-btnBlue border rounded-lg hover:text-btnBlue hover:bg-transparent hover:border-btnBlue text-white px-5 py-2 xsize:text-xs">Pay via Debit/Credit Card</button>
-                                            <button onClick={CardPayNowOnClick} className="content-white bg-btnBlue border rounded-lg hover:text-btnBlue hover:bg-transparent hover:border-btnBlue text-white px-5 py-2 xsize:text-xs">Pay via bank Acc</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="border-t my-2"></div>
-                                {/* QR Payment */}
-                                <div className="flex items-center" onClick={() => handleToggle(1)}>
-                                    <div className="cursor-pointer p-4 flex justify-between items-center w-full">
-                                        <div className="content flex items-center">
-                                            <Image src={QRCodeIcon} alt="QR Icon" className="w-20 h-8" />
-                                            <span className=' p-4 xsize:pl-0 text-md text-gray-600 xsize:text-sm '> Pay via Qr code</span>
-                                        </div>
-                                        <div className={`content transform transition-transform ${expanded === 1 ? "rotate-180" : ""}`}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg></div>
-                                    </div>
-                                </div>
-                                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === 1 ? 'max-h-[500px]' : 'max-h-0'}`}>
-                                    <div className="ml-5 flex w-full justify-center px-2 xsize:px-0">
-                                        <div className="flex flex-col justify-center items-center">
-                                            <div ref={hiddenRef} className='justify-center lg:w-6/6 mt-1 xsize:w-[90%]' style={{ textAlign: 'center', padding: '10px', backgroundColor: '#F5F7FA', marginTop: '5px', borderRadius: '5px', boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.1)' }}> 
-                                                <div className='flex justify-center'><Image src={logosvg} alt="Kuickpay Logo" width={150} height={100} /></div>
-                                                <p style={{ fontSize: '14px', color: '#666' }}>Bill Payment QR</p>
-                                                <p style={{ fontSize: '10px', color: '#999', marginBottom: '20px' }}>Scan the QR code below to pay securely.</p>
-                                                <div className='flex justify-center py-2'>  
-                                                    {isQrLoading ? (<div className="animate-pulse bg-customPulseColor flex items-center justify-center" style={{ width: '120px', height: '120px', borderRadius: '8px' }}><p className='text-xs'>Fetching QR...</p></div>) : (<div style={{ padding: '10px' }}><Canvas text={qRString} options={{ width: 100, margin: 1, bgColor: '#F5F7FA' }} /></div>)}
-                                                </div>
-                                                <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>{institutionData.amount_Currency} {voucherData.billAmount}</p>
-                                                <p className='xsize:text-[10px] lg:text-[12px]' style={{ color: '#999' }}>Expires on {voucherData.due_Date}</p>
-                                                <div className='flex justify-center'><Image src={PoweredByPFRaast} alt="Powered By Raast" className="w-14" /></div>
+                         <div className="w-full md:w-6/12 order-2 md:order-1">
+                            <div className="mb-6">
+<label className="block  text-center  font-outfit text-2xl p-2 text-slate-700">Select Payment Methods</label>
+                                <p className="text-gray-500 text-center text-sm">Choose your preferred payment option below</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                
+                                {/* 1. Card Payment */}
+                                <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+                                    <div 
+                                        className="cursor-pointer p-5 flex justify-between items-center w-full hover:bg-gray-50 transition-colors"
+                                        onClick={() => handleToggle(0)}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center shrink-0 text-blue-600">
+                                                <Image src={CreditCardIcon} alt="Card Icon" className="w-6 h-6" />
                                             </div>
-                                            <div className="button pt-3"><button className="content-white bg-btnBlue border rounded hover:text-btnBlue hover:bg-transparent hover:border-btnBlue text-white px-5 py-2 xsize:text-xs" onClick={handleDownload}>Save To Gallery</button></div>
+                                            <div>
+                                                <h3 className="text-xl text-gray-900 ">Pay via Cards & Bank Account</h3>
+                                                <p className="text-sm text-gray-500">Instant payment processing</p>
+                                            </div>
+                                        </div>
+                                        <div className={`text-gray-400 transform transition-transform duration-300 ${expanded === 0 ? "rotate-180" : ""}`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-5"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === 0 ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="p-5 pt-0">
+                                            <p className="text-xs italic text-gray-500 mb-4">"Quick, reliable, and secure card payments"</p>
+                                            
+                                            <button 
+                                                onClick={CardPayNowOnClick} 
+                                                className="w-full bg-btnBlue hover:text-btnBlue border hover:border-btnBlue text-white hover:bg-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-3 transition-colors shadow-sm"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                                                </svg>
+                                                Pay with Card
+                                            </button>
+                                            
+                                            <button 
+                                                onClick={CardPayNowOnClick} 
+                                                className="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                                                </svg>
+                                                Pay with Bank Account
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="border-t my-2"></div>
-                                {/* Internet Banking */}
-                                <div className="flex items-center" onClick={() => handleToggle(2)}>
-                                    <div className="cursor-pointer p-4 flex justify-between items-center w-full">
-                                        <div className="content flex items-center">
-                                            <Image src={IntMobBankingIcon} alt="Banking Icon" className="w-20 h-8" />
-                                            <span className='p-4 text-md xsize:text-sm text-gray-600 '>Internet/Mobile Banking</span>
+
+                                {/* 2. QR Payment */}
+                                                             {/* 2. QR Payment - UPDATED UI */}
+                                <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+                                    <div 
+                                        className="cursor-pointer p-5 flex justify-between items-center w-full hover:bg-gray-50 transition-colors"
+                                        onClick={() => handleToggle(1)}
+                                    >
+                                        <div className="flex items-center  gap-4">
+                                            <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                                                <Image src={QRCodeIcon} alt="QR Icon" className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl text-gray-900 ">Pay via Raast QR</h3>
+                                                <p className="text-sm text-gray-500">Scan & pay in seconds</p>
+                                            </div>
                                         </div>
-                                        <div className={`content transform transition-transform ${expanded === 2 ? "rotate-180" : ""}`}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg></div>
-                                    </div>
-                                </div>
-                                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === 2 ? 'max-h-96' : 'max-h-0'}`}>
-                                    <div className='content ml-10 md:text-sm xsize:text-xs'>
-                                        <div>
-                                            <strong className='text-gray-600'>Instructions:</strong>
-                                            <ol className="list-decimal text-gray-600 pl-5 mt-2 space-y-1">
-                                                <li>Login to your Bank App or Website</li>
-                                                <li>Select Bill Payment</li>
-                                                <li>Select <strong>KuickPay</strong></li>
-                                                <li className="flex flex-wrap items-center gap-1 sm:gap-2">
-                                                    <span className="whitespace-nowrap">Enter Consumer ID:</span>
-                                                    <span className="ml-1 font-semibold">{data.kuickpayID}</span>
-                                                    <button onClick={() => navigator.clipboard.writeText(data.kuickpayID)} className="mx-1 w-5 h-5 flex justify-center items-center text-gray-600 hover:text-blue-500"><Image src={copyicon} alt="Copy Icon" className="w-4 h-4" /></button>
-                                                    <span>and Submit</span>
-                                                </li>
-                                                <li>Confirm details and Pay</li>
-                                            </ol>
+                                        <div className={`text-gray-400 transform transition-transform duration-300 ${expanded === 1 ? "rotate-180" : ""}`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-5"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                                         </div>
                                     </div>
-                                    <div className="flex justify-end p-4">
-                                        <button onClick={() => setIsHowToPayModalOpen(true)} className="content-white bg-btnBlue border rounded hover:text-btnBlue hover:bg-transparent hover:border-btnBlue text-white px-5 py-2 xsize:text-xs">See How to Pay</button>
+
+                                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === 1 ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="p-6 pt-2 flex flex-col items-center">
+                                            
+                                            {/* Quote Text */}
+                                            <p className="text-center italic text-gray-500 text-sm mb-8 mt-2">
+                                                "Scan once, pay instantly - Modern payment made easy"
+                                            </p>
+
+                                            {/* Capture Area for Download */}
+                                            <div ref={hiddenRef} className='bg-white flex flex-col items-center w-full max-w-md p-4'> 
+                                                
+                                                {/* QR Border Container */}
+                                                <div className='border-[3px] border-purple-200 rounded-[2rem] p-6 mb-6 shadow-[0_0_15px_rgba(168,85,247,0.1)]'>  
+                                                    {isQrLoading ? (
+                                                        <div className="animate-pulse bg-gray-100 rounded-xl h-40 w-40 flex items-center justify-center">
+                                                            <span className="text-xs text-gray-500">Loading QR...</span>
+                                                        </div>
+                                                    ) : (
+                                                        // QR Color set to purple to match screenshot
+                                                        <Canvas 
+                                                            text={qRString} 
+                                                            options={{ 
+                                                                width: 180, 
+                                                                margin: 0,
+                                                                color: {
+                                                                    dark: '#c084fc', // Purple color for QR dots
+                                                                    light: '#ffffff',
+                                                                }
+                                                            }} 
+                                                        />
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Instructions */}
+                                                <p className="text-gray-700 text-center text-lg mb-2">
+                                                    Scan this QR code with your Raast-enabled banking app
+                                                </p>
+                                                
+                                                {/* Amount - UPDATED HERE: TOFIXED(2) */}
+                                                <p className="text-gray-500 text-center text-base">
+                                                    Amount: <span className="text-gray-700">{institutionData.amount_Currency} {Number(voucherData.billAmount).toFixed(2)}</span>
+                                                </p>
+                                            </div>
+                                            
+                                            {/* Download Button (Optional - keep functionality) */}
+                                            <button 
+                                                className="mt-4 text-btnBlue hover:text-blue-800 text-sm font-medium flex items-center gap-1 transition-colors" 
+                                                onClick={handleDownload}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 12.75l-3-3m0 0 3-3m-3 3h7.5" />
+                                                </svg>
+                                                Save to Gallery
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
+
+                                {/* 3. Internet Banking */}
+                                <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+                                    <div 
+                                        className="cursor-pointer p-5 flex justify-between items-center w-full hover:bg-gray-50 transition-colors"
+                                        onClick={() => handleToggle(2)}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
+                                                <Image src={IntMobBankingIcon} alt="Banking Icon" className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl text-gray-900 ">Internet/Mobile Banking</h3>
+                                                <p className="text-sm text-gray-500">Pay through your bank portal</p>
+                                            </div>
+                                        </div>
+                                        <div className={`text-gray-400 transform transition-transform duration-300 ${expanded === 2 ? "rotate-180" : ""}`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-5"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                                        </div>
+                                    </div>
+
+                                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === 2 ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="p-6 pt-0">
+                                            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                                <strong className='text-gray-800 block mb-2'>Instructions:</strong>
+                                                <ol className="list-decimal text-gray-600 pl-4 space-y-2 text-sm">
+                                                    <li>Login to your Bank App or Website</li>
+                                                    <li>Select Bill Payment &gt; Select <strong>KuickPay</strong></li>
+                                                    <li className="flex flex-wrap items-center gap-1">
+                                                        <span>Enter ID:</span>
+                                                        <span className="font-mono bg-white border px-1 rounded">{data.kuickpayID}</span>
+                                                        <button onClick={() => navigator.clipboard.writeText(data.kuickpayID)} className="text-blue-500 hover:text-blue-700">
+                                                            <Image src={copyicon} alt="Copy" className="w-4 h-4" />
+                                                        </button>
+                                                    </li>
+                                                    <li>Confirm details and Pay</li>
+                                                </ol>
+                                            </div>
+                                            <div className="mt-4">
+                                                <button onClick={() => setIsHowToPayModalOpen(true)} className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 py-2 rounded-lg text-sm font-medium transition-colors">
+                                                    See How to Pay
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
                         {/* --- INVOICE SUMMARY SECTION --- */}
-                        <div className="w-full md:w-6/12 order-1 md:order-2 flex justify-center">
-                            <div className="px-4 py-3 xsize:w-full sm:w-full lg:w-12/12">
-                                <div className='px-4 py-3 shadow-custom-shadow rounded lg:border md:border xs:border-none border-gray-300'>                                
+                        <div className="w-full md:w-5/12 order-1  md:order-2 flex justify-center">
+                            <div className="px-4 mt-10 py-3 xsize:w-full sm:w-full lg:w-12/12">
+                                {/* CHANGED: Added bg-white, rounded-2xl, border-gray-100 to match left side */}
+                                <div className='px-6 py-6 bg-white shadow-md rounded-2xl border border-gray-100'>                                
                                     <div className="flex justify-between items-center">
                                         <h2 className="heading tracking-widest  text-xl"> Invoice Summary</h2>
                                         <button 
                                             onClick={handleDownloadInvoice}
                                             disabled={isDownloading}
-                                            className="content border rounded px-3 py-1 text-md hover:bg-btnBlue hover:text-white flex items-center justify-center min-w-[150px] disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                            className="content border rounded-lg px-3 py-1 text-md hover:bg-btnBlue hover:text-white flex items-center justify-center min-w-[150px] disabled:bg-gray-400 disabled:cursor-not-allowed"
                                         >
                                             {isDownloading ? (
                                                 <>
@@ -465,7 +582,7 @@ const PaymentInitilization = () => {
                                         <p className={`${voucherData.bill_Status === "U" ? "text-red-500" : "text-green-500"} text-sm font-medium`}>{voucherData.bill_Status === "U" ? "Pending" : "Paid"}</p>
                                     </div>
                                     <div className="border-t mt-5"></div>
-                                    <div className="px-2 pt-5 flex justify-between items-center"><p className="text-lg">Bill Amount:</p><p className="text-lg text-gray-600">{institutionData.amount_Currency}:{voucherData.billAmount}</p></div>
+                                    <div className="px-2 pt-5 flex justify-between items-center"><p className="text-lg">Bill Amount:</p><p className="text-lg text-gray-600">{institutionData.amount_Currency} {Number(voucherData.billAmount).toFixed(2)}</p></div>
                                     <div className="xsmsize:border-t mt-5"></div>
                                 </div>
                             </div>
@@ -479,7 +596,13 @@ const PaymentInitilization = () => {
                              <div className="flex flex-col md:flex-row gap-6 p-4 md:p-6 lg:p-8 relative animate-pulse">
                                 <div className="w-full py-3 md:w-6/12 order-2 md:order-1"><div className="h-6 bg-gray-200 rounded w-1/3 mb-6 ml-10"></div><div className="space-y-4"><div className="flex items-center p-4 border-b"><div className="h-8 w-20 bg-gray-200 rounded"></div><div className="ml-4 h-5 bg-gray-200 rounded w-48"></div></div><div className="flex items-center p-4 border-b"><div className="h-8 w-20 bg-gray-200 rounded"></div><div className="ml-4 h-5 bg-gray-200 rounded w-36"></div></div><div className="flex items-center p-4"><div className="h-8 w-20 bg-gray-200 rounded"></div><div className="ml-4 h-5 bg-gray-200 rounded w-56"></div></div></div></div>
                                 <div className="w-full md:w-6/12 order-1 md:order-2 flex justify-center">
-                                <div className="px-4 py-3 w-full lg:w-12/12"><div className="px-4 py-3 shadow-lg rounded-lg border border-gray-200"><div className="flex justify-between items-center"><div className="h-6 bg-gray-200 rounded w-1/2"></div><div className="h-8 bg-gray-200 rounded w-1/4"></div></div><div className="border-t mt-5"></div><div className="px-2 pt-4 flex justify-center items-center"><div className="h-7 bg-gray-200 rounded w-3/4"></div></div><div className="space-y-4 mt-4 px-2"><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/4"></div><div className="h-4 bg-gray-200 rounded w-1/3"></div></div><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/5"></div><div className="h-4 bg-gray-200 rounded w-1/2"></div></div><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/4"></div><div className="h-4 bg-gray-200 rounded w-1/3"></div></div><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/6"></div><div className="h-4 bg-gray-200 rounded w-1/4"></div></div></div><div className="border-t mt-5"></div><div className="px-2 pt-5 flex justify-between items-center"><div className="h-5 bg-gray-200 rounded w-1/4"></div><div className="h-5 bg-gray-200 rounded w-1/3"></div></div></div></div></div>
+                                <div className="px-4 py-3 w-full lg:w-12/12">
+                                    {/* CHANGED: rounded-2xl to match loader with new design */}
+                                    <div className="px-4 py-3 shadow-sm rounded-2xl border border-gray-100">
+                                        <div className="flex justify-between items-center"><div className="h-6 bg-gray-200 rounded w-1/2"></div><div className="h-8 bg-gray-200 rounded w-1/4"></div></div><div className="border-t mt-5"></div><div className="px-2 pt-4 flex justify-center items-center"><div className="h-7 bg-gray-200 rounded w-3/4"></div></div><div className="space-y-4 mt-4 px-2"><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/4"></div><div className="h-4 bg-gray-200 rounded w-1/3"></div></div><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/5"></div><div className="h-4 bg-gray-200 rounded w-1/2"></div></div><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/4"></div><div className="h-4 bg-gray-200 rounded w-1/3"></div></div><div className="flex justify-between items-center"><div className="h-4 bg-gray-200 rounded w-1/6"></div><div className="h-4 bg-gray-200 rounded w-1/4"></div></div></div><div className="border-t mt-5"></div><div className="px-2 pt-5 flex justify-between items-center"><div className="h-5 bg-gray-200 rounded w-1/4"></div><div className="h-5 bg-gray-200 rounded w-1/3"></div></div>
+                                    </div>
+                                </div>
+                                </div>
                             </div>
                         ) : (
                         // Message for Paid/Expired/Invalid Invoices

@@ -13,182 +13,195 @@ import EncryptionUtils from "../utils/encryptionUtils";
 const PaymentConfirmation = () => {
   const router = useRouter();
   const [data, setData] = useState(null);
-   const { decryptData } = require('../utils/decryptUtils');
-  const [token , setToken] = useState(null);
+  const { decryptData } = require('../utils/decryptUtils');
+  const [token, setToken] = useState(null);
 
   const [feeData, setFeeData] = useState(null); // State to store platform fee
   const [isLoading, setIsLoading] = useState(false);
   const [cnic, setCnic] = useState("");
-const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
-     const [logoLoader, setLogoLoader] = useState(true);
- 
+  const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
+  const [logoLoader, setLogoLoader] = useState(true);
 
- useEffect(() => {
-  console.log(" [useEffect] Starting fetchData...");
 
-  const fetchData = async () => {
-    console.log(fetchData,"Creating Axios instance...");
-    const checkoutAxios = createAxiosInstance({
-      baseURL: API_URLS.gatewayUrl,
-      token: '',
-    });
+  useEffect(() => {
+    console.log(" [useEffect] Starting fetchData...");
 
-    try {
-      console.log(" [fetchData] Reading 'dataBus' from sessionStorage...");
-      const GetDatafromInquiry = sessionStorage.getItem('dataBus');
-      console.log(" [sessionStorage.dataBus]:", GetDatafromInquiry);
+    const fetchData = async () => {
+      console.log(fetchData, "Creating Axios instance...");
+      const checkoutAxios = createAxiosInstance({
+        baseURL: API_URLS.gatewayUrl,
+        token: '',
+      });
 
-      if (GetDatafromInquiry) {
-        console.log(" [decrypt] Decrypting 'dataBus'...");
-        const decryptedData = JSON.parse(EncryptionUtils.decryptText(GetDatafromInquiry));
-        console.log(" [decryptedData]:", decryptedData);
+      try {
+        console.log(" [fetchData] Reading 'dataBus' from sessionStorage...");
+        const GetDatafromInquiry = sessionStorage.getItem('dataBus');
+        console.log(" [sessionStorage.dataBus]:", GetDatafromInquiry);
 
-        if (decryptedData) {
-          console.log("[setData] Setting local state from decryptedData...");
-          setData({
-            voucherData: decryptedData.voucherData,
-            institution: decryptedData.Institution,
-            kuickpayID: decryptedData.kuickpayID,
-          });
+        if (GetDatafromInquiry) {
+          console.log(" [decrypt] Decrypting 'dataBus'...");
+          const decryptedData = JSON.parse(EncryptionUtils.decryptText(GetDatafromInquiry));
+          console.log(" [decryptedData]:", decryptedData);
 
-          console.log(" [Logo] Checking white-labeled logo...");
-          if (decryptedData.whitelabledLogo !== "") {
-            console.log(" [Logo] Found white-labeled logo:", decryptedData.whitelabledLogo);
-            setwhiteLabledLogo(decryptedData.whitelabledLogo);
-            setLogoLoader(false);
-          } else {
-            console.log(" [Logo] No white-labeled logo, using default.");
-            setLogoLoader(false);
-          }
-
-          // the bearer token
-          console.log(" [Token] Generating encryption params...");
-          const params =
-            decryptedData.Institution?.institutionID +
-            '4uNuf29HnlFG7PGwek8IRgx6gDhOaE8WiPUwYkM572zbuhnyzq6HsPtuVu9M3JbD';
-          console.log(" [Token Params]:", params);
-
-          const encryptedData = EncryptionUtils.encryptText(params).toString();
-          console.log("[Encrypted Params]:", encryptedData);
-
-          const param = {
-            ObjectValue: encryptedData,
-          };
-          console.log(" [Token API Payload]:", param);
-
-          console.log(" [API] Requesting public token from KuickPay...");
-          const gatewayTokenResponse = await axios.post(
-            'https://testcheckout.kuickpay.com/api/KPPublicToken',
-            param
-          );
-
-          console.log(" [Token Response]:", gatewayTokenResponse.data);
-
-          const { auth_token } = gatewayTokenResponse.data;
-          console.log("🪙 [auth_token]:", auth_token);
-
-          setToken(auth_token);
-
-          if (gatewayTokenResponse?.data?.responseCode === '00') {
-            console.log(" [Token Success] Token accepted, continuing...");
-
-            console.log(" [sessionStorage.localstored]:", sessionStorage.getItem('localstored'));
-            const localstoredRaw = sessionStorage.getItem('localstored');
-            const localstored = EncryptionUtils.decryptText(localstoredRaw);
-            console.log("[Decrypted localstored]:", localstored);
-
-            console.log(" [fetchPlatformFee] Calling with:", {
-              auth_token,
-              institutionID: decryptedData.Institution?.institutionID,
-              billAmount: decryptedData.voucherData?.billAmount,
+          if (decryptedData) {
+            console.log("[setData] Setting local state from decryptedData...");
+            setData({
+              voucherData: decryptedData.voucherData,
+              institution: decryptedData.Institution,
               kuickpayID: decryptedData.kuickpayID,
             });
 
-            await fetchPlatformFee(auth_token, decryptedData, localstored);
+            console.log(" [Logo] Checking white-labeled logo...");
+            if (decryptedData.whitelabledLogo !== "") {
+              console.log(" [Logo] Found white-labeled logo:", decryptedData.whitelabledLogo);
+              setwhiteLabledLogo(decryptedData.whitelabledLogo);
+              setLogoLoader(false);
+            } else {
+              console.log(" [Logo] No white-labeled logo, using default.");
+              setLogoLoader(false);
+            }
 
-            console.log(" [Card Info] localstored:", sessionStorage.getItem('localstored'));
+            // the bearer token
+            console.log(" [Token] Generating encryption params...");
+            const params =
+              decryptedData.Institution?.institutionID +
+              '4uNuf29HnlFG7PGwek8IRgx6gDhOaE8WiPUwYkM572zbuhnyzq6HsPtuVu9M3JbD';
+            console.log(" [Token Params]:", params);
+
+            const encryptedData = EncryptionUtils.encryptText(params).toString();
+            console.log("[Encrypted Params]:", encryptedData);
+
+            const param = {
+              ObjectValue: encryptedData,
+            };
+            console.log(" [Token API Payload]:", param);
+
+            console.log(" [API] Requesting public token from KuickPay...");
+            const gatewayTokenResponse = await axios.post(
+              'https://testcheckout.kuickpay.com/api/KPPublicToken',
+              param
+            );
+
+            console.log(" [Token Response]:", gatewayTokenResponse.data);
+
+            const { auth_token } = gatewayTokenResponse.data;
+            console.log("🪙 [auth_token]:", auth_token);
+
+            setToken(auth_token);
+
+            if (gatewayTokenResponse?.data?.responseCode === '00') {
+              console.log(" [Token Success] Token accepted, continuing...");
+
+              console.log(" [sessionStorage.localstored]:", sessionStorage.getItem('localstored'));
+              const localstoredRaw = sessionStorage.getItem('localstored');
+              const localstored = EncryptionUtils.decryptText(localstoredRaw);
+              console.log("[Decrypted localstored]:", localstored);
+
+              console.log(" [fetchPlatformFee] Calling with:", {
+                auth_token,
+                institutionID: decryptedData.Institution?.institutionID,
+                billAmount: decryptedData.voucherData?.billAmount,
+                kuickpayID: decryptedData.kuickpayID,
+              });
+
+              await fetchPlatformFee(auth_token, decryptedData, localstored);
+
+              console.log(" [Card Info] localstored:", sessionStorage.getItem('localstored'));
+            } else {
+              console.warn(" [Token Error] Invalid response code:", gatewayTokenResponse.data);
+            }
           } else {
-            console.warn(" [Token Error] Invalid response code:", gatewayTokenResponse.data);
+            console.error(" [fetchData] decryptedData is null or undefined!");
           }
         } else {
-          console.error(" [fetchData] decryptedData is null or undefined!");
+          console.error(" [fetchData] 'dataBus' not found in sessionStorage!");
         }
-      } else {
-        console.error(" [fetchData] 'dataBus' not found in sessionStorage!");
+      } catch (error) {
+        console.error(" [fetchData] Error during API calls:", error);
+      } finally {
+        console.log(" [fetchData] Completed execution.");
       }
-    } catch (error) {
-      console.error(" [fetchData] Error during API calls:", error);
-    } finally {
-      console.log(" [fetchData] Completed execution.");
-    }
-  };
+    };
 
-  fetchData();
-}, []);
-// Run once on page load
+    fetchData();
+  }, []);
+  // Run once on page load
 
-   const finalLogo =
-      whiteLabledLogo && whiteLabledLogo.trim() !== ''
-              ? whiteLabledLogo
-              : logo;
+  const finalLogo =
+    whiteLabledLogo && whiteLabledLogo.trim() !== ''
+      ? whiteLabledLogo
+      : logo;
 
   const fetchPlatformFee = async (auth_token, decryptedData) => {
     const savedData = sessionStorage.getItem("localstored"); // Retrieve the saved JSON string
-     
-      const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
-      const cardNumber = parsedData.cardNumber.replace(/-/g, "").slice(0, 6); // Access the cardNumber field
-      console.log("Card Number:", cardNumber); // Output the card number
-     
-    if(auth_token && cardNumber){
-try {
-  const platformFeeParams = {
-    binNumber:  cardNumber,
-    merchantId: decryptedData.Institution.institutionID,
-    amount: decryptedData.voucherData.billAmount, // Use the correct property for amount
-    orderID: decryptedData.kuickpayID,
-    TranType: 'CARD',
-  };
 
-  const checkoutAxios = createAxiosInstance({
-    baseURL: API_URLS.gatewayUrl,
-    token: auth_token,
-  });
-  
-  const response = await checkoutAxios.get('/Api/GetPlatformFee', {params: platformFeeParams,   // Adds query parameters to the GET request
-  });
+    const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
+    const cardNumber = parsedData.cardNumber.replace(/-/g, "").slice(0, 6); // Access the cardNumber field
+    console.log("Card Number:", cardNumber); // Output the card number
 
-      if (response?.data?.responseCode === '00') {
-        console.log(response.data);
-         const FeeData =response.data;     //sessionStorage.setItem('getFee', encryptData(JSON.stringify(response.data)));
-        
-        setFeeData(FeeData);
+    if (auth_token && cardNumber) {
+      try {
+        const platformFeeParams = {
+          binNumber: cardNumber,
+          merchantId: decryptedData.Institution.institutionID,
+          amount: decryptedData.voucherData.billAmount, // Use the correct property for amount
+          orderID: decryptedData.kuickpayID,
+          TranType: 'CARD',
+        };
 
+        const checkoutAxios = createAxiosInstance({
+          baseURL: API_URLS.gatewayUrl,
+          token: auth_token,
+        });
 
-       
-      } else {
-        console.error('Error fetching platform fee:', response.data);
+        const response = await checkoutAxios.get('/Api/GetPlatformFee', {
+          params: platformFeeParams,   // Adds query parameters to the GET request
+        });
+
+        if (response?.data?.responseCode === '00') {
+          console.log(response.data);
+          const FeeData = response.data;     //sessionStorage.setItem('getFee', encryptData(JSON.stringify(response.data)));
+
+          setFeeData(FeeData);
+        } else {
+          console.error('Error fetching platform fee:', response.data);
+        }
+      } catch (error) {
+        console.error('Error during GetPlatformFee API call:', error);
       }
-    } catch (error) {
-      console.error('Error during GetPlatformFee API call:', error);
     }
-  }
   };
-  
+
   const PayNowButtonEvent = async () => {
     const savedData = sessionStorage.getItem("localstored"); // Retrieve the saved JSON string
-     
-      const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
-      const cardNumber = parsedData.cardNumber.replace(/-/g, ""); // Access the cardNumber field
-      const expiryMonth = parsedData.expiryMonth
-      const expiryYear = parsedData.expiryYear.substring(2).toString()
-      const cvv = parsedData.cvv
-      console.log("Card Number:", cardNumber); // Output the 
+
+    const parsedData = JSON.parse(savedData); // Parse the JSON string back to an object
+    const cardNumber = parsedData.cardNumber.replace(/-/g, ""); // Access the cardNumber field
+    const expiryMonth = parsedData.expiryMonth
+    const expiryYear = parsedData.expiryYear.substring(2).toString()
+    const cvv = parsedData.cvv
+    
     setIsLoading(true);
-    const localstoredCardData = sessionStorage.getItem('localstored'); 
-     console.log(localstoredCardData);
-     
-    const signatureHash = {"InstitutionID":data.institution.institutionID,"OrderID":data.kuickpayID,"Amount":feeData.payableAmount,"AmountFeeCalculated":feeData.amount}
+    
+    const signatureHash = { 
+        "InstitutionID": data.institution.institutionID, 
+        "OrderID": data.kuickpayID, 
+        "Amount": feeData.payableAmount, 
+        "AmountFeeCalculated": feeData.amount 
+    }
     const stringifyHash = JSON.stringify(signatureHash);
+
+    // ============================================================
+    // DEBUGGING START: Check Raw Values Before Encryption
+    // ============================================================
+    console.group("🚀 Validate API Debugging");
+    console.log("--- 1. RAW DATA (Before Encryption) ---");
+    console.log("Card:", cardNumber);
+    console.log("CVV:", cvv);
+    console.log("Expiry:", expiryMonth + "/" + expiryYear);
+    console.log("Hash Object:", signatureHash);
+    console.log("Hash String:", stringifyHash);
+    // ============================================================
 
     const payload = {
       institutionID: data.institution.institutionID,
@@ -211,197 +224,185 @@ try {
       isEncrypt: true,
     };
 
-    console.log(":Payload:");
+    // ============================================================
+    // DEBUGGING END: Check Final Payload
+    // ============================================================
+    console.log("--- 2. FINAL PAYLOAD (Sent to API) ---");
     console.log(payload);
-    console.log("::Payload::");
-    
+    console.groupEnd();
+    // ============================================================
 
     try {
-      
+
       const checkoutAxios = createAxiosInstance({
         baseURL: API_URLS.gatewayUrl,
         token: token,
       });
-      
+
       const response = await checkoutAxios.post('/api/Validate', payload, {
         headers: {
           'Content-Type': 'application/json' // Ensuring the correct content type
-           // Include token in Authorization header
+          // Include token in Authorization header
         },
       });
-      
-          if(response?.status === 200)  {
-            
-            console.log("::Payload k andr wala::");
 
-            console.log('institutionid', response?.data?.institutionID)
-            sessionStorage.setItem("token",token)
-            sessionStorage.setItem("orderID", data.kuickpayID);
-            sessionStorage.setItem("transactionID", response?.data?.transactionID);
-            sessionStorage.setItem("institutionID",  response?.data?.institutionID);
-            // if (localstoredCardData.Instrument) {
-            //   sessionStorage.setItem("instrument", localstoredCardData.Instrument);
+      if (response?.status === 200) {
 
-            //   }
-                  sessionStorage.setItem("cardSecurityCode", EncryptionUtils.encryptText(cvv));
-                  sessionStorage.setItem("cardMonth", EncryptionUtils.encryptText(expiryMonth));
-                  sessionStorage.setItem("cardYear", EncryptionUtils.encryptText(expiryYear));
-                  sessionStorage.setItem("cardNumber", EncryptionUtils.encryptText(cardNumber));
-              // }
+        console.log("::Response Success::", response.data);
 
-              sessionStorage.setItem('amount', feeData.payableAmount),
-              sessionStorage.setItem('billAmount', feeData.amount),
-              sessionStorage.setItem("cnic", cnic.replace(/-/g, ""));
-            //router.push(`/inquiry?data=${encodeURIComponent(encryptedData)}`);
-
-            if (response?.data?.responseCode === "00" && response?.data?.returnHTML !== null) {
-
-              
-
-              sessionStorage.setItem("htmlContent", response?.data?.returnHTML);
-              
-               
-                  router.push('./pages/processHTML');
-              
-            }
-          else 
-          {
-            console.error('Error PayNow Button Catch:', response.data);
-          }
-        }
-        else if (response.status === 401) 
-        {
+        sessionStorage.setItem("token", token)
+        sessionStorage.setItem("orderID", data.kuickpayID);
+        sessionStorage.setItem("transactionID", response?.data?.transactionID);
+        sessionStorage.setItem("institutionID", response?.data?.institutionID);
         
-        console.error('Session expired.', response.status);
+        sessionStorage.setItem("cardSecurityCode", EncryptionUtils.encryptText(cvv));
+        sessionStorage.setItem("cardMonth", EncryptionUtils.encryptText(expiryMonth));
+        sessionStorage.setItem("cardYear", EncryptionUtils.encryptText(expiryYear));
+        sessionStorage.setItem("cardNumber", EncryptionUtils.encryptText(cardNumber));
+        
+        sessionStorage.setItem('amount', feeData.payableAmount),
+        sessionStorage.setItem('billAmount', feeData.amount),
+        sessionStorage.setItem("cnic", cnic.replace(/-/g, ""));
+        
+        if (response?.data?.responseCode === "00" && response?.data?.returnHTML !== null) {
+          sessionStorage.setItem("htmlContent", response?.data?.returnHTML);
+          router.push('./pages/processHTML');
         }
-      else 
-      {
+        else {
+          console.error('Error PayNow Button Catch:', response.data);
+          setIsLoading(false);
+        }
       }
-      } 
-      catch (error) {
-      console.error('Error during GetPlatformFee API call:', error);
+      else if (response.status === 401) {
+        console.error('Session expired.', response.status);
+        setIsLoading(false);
       }
-       
-
-
+      else {
+        setIsLoading(false);
+      }
+    }
+    catch (error) {
+      console.error('Error during Validate API call:', error);
+      setIsLoading(false);
+    }
   };
 
 
   return (
     <div className="p-1 flex flex-col min-h-screen z-10">
-     <Header 
-                Heading="PAYMENT LINK" 
-                logo={finalLogo}
-                logoLoader={logoLoader}
-              />
-                   
-    <main className="flex items-center justify-center pt-5 sm:ml-5 sm:mr-5">
-      <div className="w-full max-h-100 md:w-5/12 xsize:w-10/12 order-1 md:order-2 mr-1 sm:mr-4 md:mr-8 lg:mr-6 flex justify-center">
-        <div className="px-4 py-3 md:shadow-custom-shadow rounded lg:border:none md:border:none xs:border-none border-gray-300 xsize:w-full sm:w-full lg:w-10/12">
-          {feeData ? (
-            <>
-              <div className="flex justify-between items-center">
-                <h2 className="heading tracking-widest text-xl lg:text-xl md:text-md xsize:text-md">
-                  Confirmation
-                </h2>
-              </div>
-              <div className="border-t mt-2"></div>
+      <Header
+        Heading="PAYMENT LINK"
+        logo={finalLogo}
+        logoLoader={logoLoader}
+      />
 
-              <div className="px-2 pt-4 flex justify-between items-center">
-                <p className="InvSumContent">Bill Amount:</p>
-                <p className="InvSumContentweight">PKR {feeData.amount}0</p>
-              </div>
-              <div className="px-2 pt-2 flex justify-between items-center">
-                <p className="InvSumContent">Platform fee:</p>
-                <p className="InvSumContentweight">PKR {feeData.platformFee}</p>
-              </div>
+      <main className="flex items-center justify-center pt-5 sm:ml-5 sm:mr-5">
+        <div className="w-full max-h-100 md:w-5/12 xsize:w-10/12 order-1 md:order-2 mr-1 sm:mr-4 md:mr-8 lg:mr-6 flex justify-center">
+          <div className="px-4 py-3 md:shadow-custom-shadow rounded lg:border:none md:border:none xs:border-none border-gray-300 xsize:w-full sm:w-full lg:w-10/12">
+            {feeData ? (
+              <>
+                <div className="flex justify-between items-center">
+                  <h2 className="heading tracking-widest text-xl lg:text-xl md:text-md xsize:text-md">
+                    Confirmation
+                  </h2>
+                </div>
+                <div className="border-t mt-2"></div>
 
-              <div className="border-t mt-5"></div>
-              <p className="px-2 pt-2 justify-between items-center lg:text-md md:text-md sm:text-sm xsize:text-xs">
-                Your Platform Fee is Rs. for using a Visa Card
-              </p>
-
-              <div className="px-2 pt-5 flex justify-between items-center">
-                <p className="text-lg font-light">Payable Amount:</p>
-                <p className="font-medium text-lg">PKR {feeData.payableAmount}</p>
-              </div>
-
-              <div className="flex items-center w-full py-2 mt-10 relative">
-                <button
-                  className="button-style"
-                  onClick={PayNowButtonEvent}
-                  disabled={isLoading}
-                >
-                  Pay now
-                </button>
-                {isLoading && (
-                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                 <div 
-                   role="status"
-                   className="flex items-center justify-center"
-                 >
-                   <svg
-                     aria-hidden="true"
-                     className="w-24 h- text-gray-200 animate-spin dark:text-gray-600 fill-btnBlue"
-                     viewBox="0 0 100 101"
-                     fill="none"
-                     xmlns="http://www.w3.org/2000/svg"
-                   >
-                     <path
-                       d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                       fill="currentColor"
-                     />
-                     <path
-                       d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                       fill="currentFill"
-                     />
-                   </svg>
-                   <span className="sr-only">Loading...</span>
-                 </div>
-               </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <div>
-              {/* Page load skeleton here */}
-
-              <div>
-              {/* Loading State */}
-              <div className="flex justify-between items-center">
-                <h2 className="heading tracking-widest text-xl lg:text-xl md:text-md xsize:text-md">
-                  Confirmation
-                </h2>
-              </div>
-              <div className="border-t mt-2"></div>
-              <div className="animate-pulse">
                 <div className="px-2 pt-4 flex justify-between items-center">
-                  <p className="InvSumContent bg-gray-300 h-4 w-24 rounded"></p>
-                  <p className="InvSumContentweight bg-gray-300 h-4 w-20 rounded"></p>
+                  <p className="InvSumContent">Bill Amount:</p>
+                  <p className="InvSumContentweight">PKR {feeData.amount}0</p>
                 </div>
                 <div className="px-2 pt-2 flex justify-between items-center">
-                  <p className="InvSumContent bg-gray-300 h-4 w-24 rounded"></p>
-                  <p className="InvSumContentweight bg-gray-300 h-4 w-20 rounded"></p>
+                  <p className="InvSumContent">Platform fee:</p>
+                  <p className="InvSumContentweight">PKR {feeData.platformFee}</p>
                 </div>
+
                 <div className="border-t mt-5"></div>
-                <p className="px-2 pt-2 bg-gray-300 h-4 w-48 rounded"></p>
+                <p className="px-2 pt-2 justify-between items-center lg:text-md md:text-md sm:text-sm xsize:text-xs">
+                  Your Platform Fee is Rs. for using a Visa Card
+                </p>
+
                 <div className="px-2 pt-5 flex justify-between items-center">
-                  <p className="text-lg font-light bg-gray-300 h-4 w-24 rounded"></p>
-                  <p className="font-medium text-lg bg-gray-300 h-4 w-20 rounded"></p>
+                  <p className="text-lg font-light">Payable Amount:</p>
+                  <p className="font-medium text-lg">PKR {feeData.payableAmount}</p>
                 </div>
-                <div className="flex items-center w-full py-2 mt-10">
-                  <div className="button-style bg-gray-300 h-8 w-32 rounded"></div>
+
+                <div className="flex items-center w-full py-2 mt-10 relative">
+                  <button
+                    className="button-style"
+                    onClick={PayNowButtonEvent}
+                    disabled={isLoading}
+                  >
+                    Pay now
+                  </button>
+                  {isLoading && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                      <div
+                        role="status"
+                        className="flex items-center justify-center"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          className="w-24 h- text-gray-200 animate-spin dark:text-gray-600 fill-btnBlue"
+                          viewBox="0 0 100 101"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentFill"
+                          />
+                        </svg>
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                {/* Page load skeleton here */}
+
+                <div>
+                  {/* Loading State */}
+                  <div className="flex justify-between items-center">
+                    <h2 className="heading tracking-widest text-xl lg:text-xl md:text-md xsize:text-md">
+                      Confirmation
+                    </h2>
+                  </div>
+                  <div className="border-t mt-2"></div>
+                  <div className="animate-pulse">
+                    <div className="px-2 pt-4 flex justify-between items-center">
+                      <p className="InvSumContent bg-gray-300 h-4 w-24 rounded"></p>
+                      <p className="InvSumContentweight bg-gray-300 h-4 w-20 rounded"></p>
+                    </div>
+                    <div className="px-2 pt-2 flex justify-between items-center">
+                      <p className="InvSumContent bg-gray-300 h-4 w-24 rounded"></p>
+                      <p className="InvSumContentweight bg-gray-300 h-4 w-20 rounded"></p>
+                    </div>
+                    <div className="border-t mt-5"></div>
+                    <p className="px-2 pt-2 bg-gray-300 h-4 w-48 rounded"></p>
+                    <div className="px-2 pt-5 flex justify-between items-center">
+                      <p className="text-lg font-light bg-gray-300 h-4 w-24 rounded"></p>
+                      <p className="font-medium text-lg bg-gray-300 h-4 w-20 rounded"></p>
+                    </div>
+                    <div className="flex items-center w-full py-2 mt-10">
+                      <div className="button-style bg-gray-300 h-8 w-32 rounded"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
 
-    <Footer />
-  </div>
+      <Footer />
+    </div>
   );
 };
 

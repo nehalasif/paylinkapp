@@ -1,21 +1,19 @@
 'use client';
 
 import React from 'react';
-// import Image from 'next/image';
-// import footerSVG from '../components/svgs/Footer.svg';
 
 const Footer = ({ Heading }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="relative pt-24">
+    <div className="relative w-full">
       {/* 
-        FOOTER ELEMENT MEIN TABDEELI:
-        1. 'justify-center' ko 'justify-between' se badla gaya hai taake items kinaron par chalen jayen.
-        2. 'px-4' (padding left/right) aur 'pb-2' (padding bottom) add ki gayi hai taake text bilkul kinaron se na chipke.
-        3. 'items-end' ko rakha gaya hai taake text neeche align ho.
+        CHANGES MADE:
+        1. Removed 'md:h-40' and 'xsize:h-20' (Fixed height hata di).
+        2. Added 'py-4' (Top/Bottom padding) taake text bilkul chipka na ho, lekin extra space bhi na ho.
+        3. 'items-center' kar diya taake text vertically center rahy (agar height auto hai).
       */}
-      <footer className="bottom-0 left-0 w-full flex items-end justify-between px-4 pb-2 md:px-8 md:h-40 xsize:h-20 z-[-1]">
+      <footer className="w-full flex items-center justify-between px-4 py-2 md:px-8 z-0">
         
         {/* Left Side Text */}
         <p className="font-thin text-slate-400 md:text-sm sm:text-sm xsize:text-[8px]">
