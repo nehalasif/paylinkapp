@@ -12,9 +12,6 @@ import { API_URLS } from './constants/config';
 import EncryptionUtils from "./utils/encryptionUtils";
 import './globals.css';
 
-
-// import bgImage from './19f0e898da7ddc16899c1d62c1dbd1eb.jpg';
-
 const PaymentLink = () => {
     const router = useRouter();
     const [options, setOptions] = useState([]);
@@ -23,6 +20,9 @@ const PaymentLink = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [kuickpayID, setKuickpayID] = useState('');
     const [selectedInstitution, setSelectedInstitution] = useState(null);
+    
+    // --- NEW STATE FOR BUTTON LOADER ---
+    const [isLoading, setIsLoading] = useState(false);
     
     const dropdownRef = useRef(null);
     const [isFetchingBillers, setIsFetchingBillers] = useState(true);
@@ -108,14 +108,28 @@ const PaymentLink = () => {
         setSelectedInstitution(option);
     };
 
+    // --- UPDATED FUNCTION TO HANDLE LOADING ---
     const handleFetchBill = () => {
         if (selectedInstitution && kuickpayID) {
             if (kuickpayID.length > 5) {
-                const consumerDataEnc = EncryptionUtils.encryptText(JSON.stringify({
-                    institutionID: selectedInstitution.institutionID,
-                    kuickpayID: kuickpayID
-                }));
-                router.push(`/inquiry?data=${encodeURIComponent(consumerDataEnc)}`);
+                // 1. Activate Loader
+                setIsLoading(true);
+
+                try {
+                    const consumerDataEnc = EncryptionUtils.encryptText(JSON.stringify({
+                        institutionID: selectedInstitution.institutionID,
+                        kuickpayID: kuickpayID
+                    }));
+                    
+                    // 2. Navigate
+                    router.push(`/inquiry?data=${encodeURIComponent(consumerDataEnc)}`);
+                    
+                    // Note: We do NOT set isLoading(false) here because the page is changing.
+                } catch (error) {
+                    console.error("Error processing request:", error);
+                    setIsLoading(false); // Stop loader if code crashes
+                }
+
             } else {
                 alert('The length of the Kuickpay ID must be greater than 5.');
             }
@@ -226,7 +240,6 @@ const PaymentLink = () => {
                                 </div>
                                 <div 
                                     ref={dropdownRef} 
-                                    // CHANGE 1: bg-white/70 changed to bg-gray-100
                                     className={`bg-gray-100 rounded-lg border border-white/50 focus-within:border-btnBlue focus-within:bg-white transition-all ${isFetchingBillers ? 'opacity-70 pointer-events-none' : ''}`}
                                 >
                                     <SearchableTextbox
@@ -249,7 +262,6 @@ const PaymentLink = () => {
 
                             <div className="space-y-1">
                                 <label className="block font-outfit text-slate-700">Consumer Number</label>
-                                {/* CHANGE 2: bg-white/70 changed to bg-gray-100 */}
                                 <div className="bg-gray-100 rounded-lg border border-white/50 focus-within:border-btnBlue focus-within:bg-white transition-all">
                                     <Textbox
                                         Icon={SearchIcon}
@@ -261,14 +273,30 @@ const PaymentLink = () => {
                                 </div>
                             </div>
 
+                            {/* --- UPDATED BUTTON WITH LOADING STATE --- */}
                             <button
                                 onClick={handleFetchBill}
-                                className="w-full bg-[#287DCE]  text-white  font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 mt-2"
+                                disabled={isLoading}
+                                className={`w-full bg-[#287DCE] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 mt-2 ${
+                                    isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
+                                }`}
                             >
-                                <span>Fetch Bill</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                </svg>
+                                {isLoading ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Processing...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Fetch Bill</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                        </svg>
+                                    </>
+                                )}
                             </button>
                         </div>
 

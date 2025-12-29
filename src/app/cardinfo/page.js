@@ -11,11 +11,9 @@ import axios from 'axios';
 import { API_URLS } from '../constants/config'; 
 import { createAxiosInstance } from '@/app/constants/axiosInstance';
 
-// Import your SVGs
 import card from '../components/svgs/cardinfo/cc.svg';
 import lock from '../components/svgs/cardinfo/Vector.svg';
 
-// Simple Icon placeholders (Updated Styling)
 const ShieldIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -33,19 +31,16 @@ const CardInfo = () => {
   const [whiteLabledLogo, setwhiteLabledLogo] = useState(null);
   const [logoLoader, setLogoLoader] = useState(true);
   
-  // States for Logic
   const [gatewayToken, setGatewayToken] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFeeCalculated, setIsFeeCalculated] = useState(false);
 
-  // Form State
   const [cardNumber, setCardNumber] = useState('');
   const [cardHolderName, setCardHolderName] = useState('');
   const [expiryMonth, setExpiryMonth] = useState('');
   const [expiryYear, setExpiryYear] = useState('');
   const [cvv, setCvv] = useState('');
 
-  // --- SUMMARY STATE ---
   const [summaryData, setSummaryData] = useState({
     institutionID: "",
     kuickpayID: "",
@@ -133,7 +128,6 @@ const CardInfo = () => {
     initializePage();
   }, []);
 
-  // --- HANDLERS ---
   const handleCardNumberChange = (e) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 16) value = value.slice(0, 16);
@@ -142,7 +136,6 @@ const CardInfo = () => {
 
     if (value.length === 16) expiryMonthRef.current?.focus();
 
-    // LOGIC TO DETECT CARD SCHEME
     if (/^4/.test(value)) {
         setCardScheme('visa');
     } 
@@ -223,7 +216,6 @@ const CardInfo = () => {
           const platformFeeParams = {
               binNumber: cleanCard,
               merchantId: summaryData.institutionID,
-              // --- FIXED: API ko bhejtay waqt bhi 2 decimals ---
               amount: Number(summaryData.amount).toFixed(2),
               orderID: summaryData.kuickpayID,
               TranType: 'CARD',
@@ -244,7 +236,6 @@ const CardInfo = () => {
           if (response?.data?.responseCode === '00') {
               setSummaryData(prev => ({
                   ...prev,
-                  // --- FIXED: Response anay par bhi 2 decimals set kiye UI ke liye ---
                   platformFee: Number(response.data.platformFee).toFixed(2),
                   payableAmount: Number(response.data.payableAmount).toFixed(2)
               }));
@@ -267,7 +258,6 @@ const CardInfo = () => {
       const signatureHash = { 
           "InstitutionID": summaryData.institutionID, 
           "OrderID": summaryData.kuickpayID, 
-          // --- FIXED: Hash banatay waqt 2 decimals ensure kiye ---
           "Amount": Number(summaryData.payableAmount).toFixed(2), 
           "AmountFeeCalculated": Number(summaryData.amount).toFixed(2)
       };
@@ -403,7 +393,7 @@ const CardInfo = () => {
                 </div>
                 <div>
                   <h4 className="text-[#166534] font-medium text-base">Secure Payment</h4>
-                  <p className="text-[#15803d] text-sm mt-0.5">Your payment is protected by 256-bit SSL encryption</p>
+                  <p className="text-[#15803d] text-sm mt-0.5">Your payment is protected by 256-bit SSL encryption.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -412,7 +402,7 @@ const CardInfo = () => {
                 </div>
                 <div>
                   <h4 className="text-[#166534] font-medium text-base">PCI Compliant</h4>
-                  <p className="text-[#15803d] text-sm mt-0.5">We never store your CVV or sensitive card data</p>
+                  <p className="text-[#15803d] text-sm mt-0.5">We never store your CVV or sensitive card data.</p>
                 </div>
               </div>
             </div>
@@ -420,7 +410,7 @@ const CardInfo = () => {
             {/* 3. QUOTE CARD */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 flex items-center justify-center gap-2">
                <span className="text-xl">💳</span>
-               <p className="text-gray-500 text-sm italic">"Fast, secure, and hassle-free card payments"</p>
+               <p className="text-gray-500 text-sm italic">"Fast, secure, and hassle-free card payments."</p>
             </div>
 
           </div>
@@ -501,7 +491,7 @@ const CardInfo = () => {
                    type="text"
                    value={cardHolderName}
                    onChange={(e) => setCardHolderName(e.target.value)}
-                   placeholder="Moiz Pasha."
+                   placeholder="Holder Name.."
                    disabled={isFeeCalculated}
                    className={`w-full bg-gray-50 border ${errors.cardHolderName ? 'border-red-500' : 'border-gray-200'} rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-400`}
                 />

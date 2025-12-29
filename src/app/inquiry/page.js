@@ -334,7 +334,7 @@ const PaymentInitilization = () => {
 
         try {
             const consumerNo = data.kuickpayID;
-            const institutionId = data.institutionID;
+            const institutionId = data.institution
             const invoiceUrl = `https://uatmerchantapi.kuickpay.com/api/KPPrintVoucher/${consumerNo}/${institutionId}`;
 
             const response = await fetch(invoiceUrl);
@@ -343,7 +343,7 @@ const PaymentInitilization = () => {
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
+            link.href = url;ID;
             link.setAttribute('download', `Invoice-${consumerNo}.pdf`);
             document.body.appendChild(link);
             link.click();
@@ -611,7 +611,7 @@ const PaymentInitilization = () => {
                                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Attention!</h2>
                                 <div className="border-t my-4"></div>
                                 <p className="text-gray-600 mb-4 text-lg">
-                                    {voucherData.bill_Status === "P" ? `This invoice (ID: ${data?.kuickpayID}) has already been paid.` : `The invoice (ID: ${data?.kuickpayID}) is expired, blocked, or invalid. Please contact the biller for assistance.`}
+                                    {voucherData.bill_Status === "P" ? `This invoice (ID: ${data?.kuickpayID}) has already been paid.` : `The invoice (ID: ${data?.kuickpayID})  'Biller' and 'Consumer Number' doesn't match. Please select correct biller"`}
                                 </p>
                                 <button onClick={backtoHome} className="mt-4 content-white bg-btnBlue border rounded hover:bg-blue-700 text-white px-6 py-2">Go to Homepage</button>
                             </div>
