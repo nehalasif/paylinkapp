@@ -49,7 +49,7 @@ const SearchableTextbox = ({
           onChange={(e) => setSearchText(e.target.value)}
           placeholder={'Search Your Biller'}
           // IMPORTANT: 'bg-transparent' add kiya hai taake peeche ka gray color nazar aye
-          className="px-3 w-full h-full focus:outline-none bg-transparent text-slate-700 placeholder-slate-500"
+          className="px-3 w-full h-full focus:outline-none bg-transparent text-slate-700 placeholder-slate-400"
         />
       </div>
 

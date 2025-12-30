@@ -532,18 +532,19 @@ const CardInfo = () => {
                 {/* 3. CVV */}
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">CVV</label>
-                  <div className="relative">
-                    <Textbox
-                      Icon={null}
-                      ref={cvvRef}
-                      type="password"
-                      value={cvv}
-                      onChange={handleCvvChange}
-                      placeholder="123"
-                      disabled={isFeeCalculated}
-                      className={`w-full bg-gray-50 border ${errors.cvv ? 'border-red-500' : 'border-gray-200'} rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-400`}
-                    />
-                  </div>
+  <div className="relative">
+    <input
+      ref={cvvRef}
+      type="password"      
+      inputMode="numeric"    
+      maxLength={3}          
+      value={cvv}
+      onChange={handleCvvChange}
+      placeholder="123"
+      disabled={isFeeCalculated}
+      className={`w-full bg-gray-100  ${errors.cvv ? '' : 'border-gray-100'} rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100 placeholder-slate-400`}
+    />
+  </div>
                 </div>
               </div>
               

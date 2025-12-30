@@ -21,7 +21,7 @@ const Textbox = ({ Icon, placeholder, value, onChange, ref }) => {
           type="text"
           placeholder={placeholder}
           // bg-transparent zaroori hai taake peeche ka gray color nazar aye
-          className="px-3 w-full h-full focus:outline-none bg-transparent text-slate-700 placeholder-slate-500"
+          className="px-3 w-full h-full focus:outline-none bg-transparent text-slate-700 placeholder-slate-400"
           value={value} 
           onChange={onChange} 
         />

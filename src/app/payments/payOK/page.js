@@ -11,6 +11,7 @@ import logo from '../../components/Images/kuickpay-logo.png';
 import Footer from '@/app/components/footer'; 
 import html2canvas from 'html2canvas';
 
+// --- Success Icon Component ---
 const SuccessIcon = () => (
   <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[#dcfce7] mb-4">
     <svg className="h-8 w-8 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +21,6 @@ const SuccessIcon = () => (
 );
 
 const PayOK = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [processedData, setProcessedData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,11 +29,13 @@ const PayOK = () => {
   
   const currentDate = new Date();
 
+  // Helper to format date
   const formatDate = (date) => {
     const options = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit', hour12: false };
     return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
   };
 
+  // Helper to Download Receipt
   const handleDownload = async () => {
     if (hiddenRef.current) {
       try {
@@ -53,18 +55,19 @@ const PayOK = () => {
     }
   };
 
-  // --- UPDATED TRANSACTION FUNCTION ---
+  // --- CORE FUNCTION: Send Transaction Data to API ---
   const transactionPost = async () => {
-    console.log("🚀 Transaction API Process Started...");
+    console.log("🚀 Transaction Process Started...");
 
-    // 1. Get Token
+    // 1. Get Token from Session
     const token = sessionStorage.getItem('token');
     if (!token) {
+        console.error("❌ Token Not Found in SessionStorage! Cannot call API.");
         setIsLoading(false);
         return;
     }
 
-    // 2. Get Institution ID safely
+    // 2. Extract Institution ID from DataBus
     let instID = '';
     const dataBusRaw = sessionStorage.getItem('dataBus');
     if (dataBusRaw) {
@@ -73,29 +76,31 @@ const PayOK = () => {
             const parsedData = JSON.parse(decryptedJson);
             instID = parsedData?.Institution?.institutionID || '';
         } catch (e) {
-            console.error("❌ Error decrypting DataBus for ID:", e);
+            console.error("❌ Error decrypting DataBus for InstitutionID:", e);
         }
-    } else {
-        console.warn("⚠️ DataBus missing in SessionStorage");
     }
 
-    // 3. Prepare Payload
+    // 3. Construct Payload (EXACTLY AS REQUESTED)
     const payload = {
-      institutionID: instID, 
-      transactionID: sessionStorage.getItem('transactionID') || '',
+      institutionID: instID,                                      // e.g. "02429"
+      transactionID: sessionStorage.getItem('transactionID') || '', 
       orderID: sessionStorage.getItem('orderID') || '',
-      amount: sessionStorage.getItem('amount') || '0',
-      SecurityCode: '', 
-      CardNumber: '',   
-      ExpiryMonth: '',
-      ExpiryYear: '',
-      cnic: '',
+      amount: sessionStorage.getItem('amount') || '0.00',
+      
+      // Empty Strings as requested
+      CardNumber: "",
+      ExpiryMonth: "",
+      ExpiryYear: "",
+      SecurityCode: "",
+      cnic: "",
+      
+      // Fixed Values
+      UserID: "Guest",
       type: "Card",
-      UserID: 'Guest',
-      isEncrypt: false,
+      isEncrypt: false
     };
 
-    console.log("📦 Payload sending to API:", payload);
+    console.log("📦 Sending Exact Payload to /api/Transaction:", payload);
 
     // 4. Create Axios Instance
     const checkoutAxios = createAxiosInstance({
@@ -103,33 +108,35 @@ const PayOK = () => {
       token: token,
     });
 
+    // 5. Call API
     try {
       const res = await checkoutAxios.post('/api/Transaction', payload, {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      console.log("✅ API Response Received:", res);
+      console.log("✅ API Response:", res);
 
       if (res.status === 200) {
         setProcessedData(res.data);
-      } else {
-        console.warn("⚠️ API returned status:", res.status);
       }
     } catch (ex) {
-      console.error("❌ Transaction API Failed:", ex);
-      if(ex.response) {
-          console.error("Server Response Data:", ex.response.data);
+      console.error("❌ Transaction API Error:", ex);
+      if (ex.response) {
+          console.error("🔴 Server Response Data:", ex.response.data);
       }
     } finally {
+      // Stop Loading (Success or Fail)
       setIsLoading(false);
     }
   };
 
+  // --- useEffect: Runs on Page Load ---
   useEffect(() => {
     const initializePage = async () => {
       try {
         setIsLoading(true);
 
+        // Load View Data (for UI display)
         const dataBusRaw = sessionStorage.getItem('dataBus');
         if (dataBusRaw) {
           try {
@@ -141,39 +148,43 @@ const PayOK = () => {
               institution: parsedData.Institution,
               kuickpayID: parsedData.kuickpayID,
             });
-          } catch (decryptErr) {
-            console.error("Display Data Decryption Error:", decryptErr);
+          } catch (err) {
+            console.error("Display Data Decryption Error:", err);
           }
         }
         
-        // Call API
+        // Execute Transaction API
         await transactionPost();
 
       } catch (error) {
-        console.error('❌ Error in useEffect:', error);
+        console.error('❌ Error in initialization:', error);
         setIsLoading(false); 
       }
     };
 
     initializePage();
-  }, []); // Empty dependency array means runs once on mount
+  }, []);
 
   const backtoHome = async () => {
-    // Clear sensitive session data before going home (Optional but recommended)
-    // sessionStorage.clear(); 
     router.push('/');
   };
 
   return (
     <div className="flex flex-col min-h-screen font-sans bg-[#f9fafb]">
+      
+      {/* Header */}
       <div className="shrink-0 w-full pt-2">
          <Header Heading="" logo={logo} width={140} height={40} />
       </div>
 
+      {/* Main Content */}
       <main className="flex-grow flex items-center justify-center p-4">
+        
         <div className="bg-white w-full max-w-[420px] rounded-[30px] shadow-2xl shadow-indigo-100/50 p-8 pb-10 border border-gray-100">
           
+          {/* Printable Area */}
           <div ref={hiddenRef} className="bg-white rounded-t-[30px]"> 
+              
               <div className="text-center mb-8">
                   <SuccessIcon />
                   <h1 className="text-xl font-bold text-gray-900 mb-1">Payment Successful</h1>
@@ -182,6 +193,7 @@ const PayOK = () => {
 
               {!isLoading && data ? (
                   <>
+                  {/* Amount Display */}
                   <div className="text-center mb-10">
                       <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">TOTAL AMOUNT PAID</p>
                       <div className="flex justify-center items-baseline text-gray-800">
@@ -192,6 +204,7 @@ const PayOK = () => {
                       </div>
                   </div>
 
+                  {/* Receipt Details */}
                   <div className="space-y-4 mb-8">
                       <div className="flex justify-between items-center text-xs pb-3 border-b border-dashed border-gray-100">
                           <span className="text-gray-400 font-medium">Paid to</span>
@@ -223,6 +236,7 @@ const PayOK = () => {
                   </div>
                   </>
               ) : (
+                  // Loader
                   <div className="animate-pulse space-y-6 mb-8">
                       <div className="h-16 w-3/4 bg-gray-100 rounded mx-auto"></div>
                       <div className="space-y-4">
@@ -230,11 +244,12 @@ const PayOK = () => {
                           <div className="h-4 bg-gray-50 rounded w-full"></div>
                           <div className="h-4 bg-gray-50 rounded w-full"></div>
                       </div>
-                      <div className="text-center text-xs text-gray-400 mt-2">Processing Transaction...</div>
+                      <div className="text-center text-xs text-gray-400 mt-2">Processing Payment...</div>
                   </div>
               )}
           </div> 
 
+          {/* Action Buttons */}
           {!isLoading && data && (
               <div className="flex flex-col gap-3">
                   <button 
@@ -262,7 +277,7 @@ const PayOK = () => {
 
         </div>
 
-      </main> 
+      </main>
 
       <div className="shrink-0 w-full">
           <Footer />
@@ -272,6 +287,7 @@ const PayOK = () => {
   );
 };
 
+// Wrapper
 const PaymentInitilizationWithSuspense = () => {
   return (
     <Suspense fallback={
